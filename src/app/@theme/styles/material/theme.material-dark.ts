@@ -51,7 +51,7 @@ const baseThemeVariables = baseTheme.variables;
 
 export const MATERIAL_DARK_THEME = {
   name: 'material-dark',
-  base: 'default',
+  base: 'material-dark',
   variables: {
     temperature: {
       arcFill: [

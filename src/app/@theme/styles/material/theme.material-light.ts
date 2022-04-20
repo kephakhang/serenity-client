@@ -10,7 +10,7 @@ const palette = {
 
 export const baseTheme: NbJSThemeOptions = {
   name: 'material-light',
-  base: 'default',
+  base: 'material-light',
   variables: {
     fontMain: 'Roboto, sans-serif',
     fontSecondary: 'Roboto, sans-serif',
@@ -51,7 +51,7 @@ const baseThemeVariables = baseTheme.variables;
 
 export const MATERIAL_LIGHT_THEME = {
   name: 'material-light',
-  base: 'default',
+  base: 'material-light',
   variables: {
     temperature: {
       arcFill: [

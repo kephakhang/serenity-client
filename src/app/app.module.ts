@@ -11,6 +11,10 @@ import { CoreModule } from './@core/core.module';
 import { ThemeModule } from './@theme/theme.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { RouteReuseStrategy } from '@angular/router';
+import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { Message } from './providers/message/message';
+import { AuthServiceProvider  } from './providers/auth-service/auth-service';
 import {
   NbChatModule,
   NbDatepickerModule,
@@ -26,6 +30,7 @@ import {
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    IonicModule.forRoot(),
     HttpClientModule,
     AppRoutingModule,
     NbSidebarModule.forRoot(),
@@ -39,6 +44,11 @@ import {
     }),
     CoreModule.forRoot(),
     ThemeModule.forRoot(),
+  ],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    Message,
+    AuthServiceProvider
   ],
   bootstrap: [AppComponent],
 })

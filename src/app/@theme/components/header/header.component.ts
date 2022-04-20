@@ -6,6 +6,7 @@ import { LayoutService } from '../../../@core/utils';
 import { map, takeUntil } from 'rxjs/operators';
 import { Subject, Observable } from 'rxjs';
 import { RippleService } from '../../../@core/utils/ripple.service';
+import { AuthServiceProvider } from '../../../providers/auth-service/auth-service';
 
 @Component({
   selector: 'ngx-header',
@@ -20,6 +21,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   user: any;
 
   themes = [
+    /*
     {
       value: 'default',
       name: 'Light',
@@ -36,25 +38,28 @@ export class HeaderComponent implements OnInit, OnDestroy {
       value: 'corporate',
       name: 'Corporate',
     },
-    {
-      value: 'material-light',
-      name: 'Material Light',
-    },
+    */
     {
       value: 'material-dark',
       name: 'Material Dark',
     },
+    {
+      value: 'material-light',
+      name: 'Material Light',
+    },
+
   ];
 
-  currentTheme = 'default';
+  currentTheme = 'material-dark';
 
   userMenu = [ { title: 'Profile' }, { title: 'Log out' } ];
 
   public constructor(
+    public auth: AuthServiceProvider,
     private sidebarService: NbSidebarService,
     private menuService: NbMenuService,
     private themeService: NbThemeService,
-    private userService: UserData,
+    // private userService: UserData,
     private layoutService: LayoutService,
     private breakpointService: NbMediaBreakpointsService,
     private rippleService: RippleService,
@@ -62,16 +67,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.materialTheme$ = this.themeService.onThemeChange()
       .pipe(map(theme => {
         const themeName: string = theme?.name || '';
-        return themeName.startsWith('material');
+        return themeName.toLowerCase().startsWith('material');
       }));
   }
 
   ngOnInit() {
     this.currentTheme = this.themeService.currentTheme;
 
-    this.userService.getUsers()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((users: any) => this.user = users.nick);
+    this.auth.getUser().then(user => {
+      this.user = user
+    }, err => {
+      this.auth.logout()
+    })
+    // this.userService.getUsers()
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((users: any) => this.user = users.nick);
 
     const { xl } = this.breakpointService.getBreakpointsMap();
     this.themeService.onMediaQueryChange()
@@ -88,7 +98,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       )
       .subscribe(themeName => {
         this.currentTheme = themeName;
-        this.rippleService.toggle(themeName?.startsWith('material'));
+        this.rippleService.toggle(themeName?.toLowerCase().startsWith('material'));
       });
   }
 
