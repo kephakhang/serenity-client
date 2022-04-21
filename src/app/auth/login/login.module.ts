@@ -1,23 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { NbLoginComponent } from './login.component';
+import { LoginComponent } from './login.component';
+
 
 @NgModule({
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        IonicModule,
-        RouterModule.forChild([
-            {
-                path: '',
-                component: NbLoginComponent
-            }
-        ])
-    ],
-    // declarations: [NbLoginComponent]
+  declarations: [],
+  imports: [
+    CommonModule,
+    IonicModule,
+    RouterModule.forChild([
+      {
+        path: '',
+        component: LoginComponent
+      }
+    ])
+  ]
 })
-export class NbLoginModule { }
+export class LoginModule { }

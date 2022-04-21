@@ -1,11 +1,17 @@
-import { ExtraOptions, RouterModule, Routes } from '@angular/router'
-import { NgModule } from '@angular/core'
-import { NbAuthComponent } from './auth/auth.component'
-import { NbLoginComponent } from './auth/login/login.component'
-import { NbLogoutComponent } from './auth/logout/logout.component'
-import { NbRegisterComponent } from './auth/register/register.component'
-import { NbRequestPasswordComponent } from './auth/request-password/request-password.component'
-import { NbResetPasswordComponent } from './auth/reset-password/reset-password.component'
+import { ExtraOptions, RouterModule, Routes, PreloadAllModules } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { LoginComponent } from './auth/login/login.component'
+import { LogoutComponent } from './auth/logout/logout.component'
+import { RegisterComponent } from './auth/register/register.component'
+import { RequestPasswordComponent } from './auth/request-password/request-password.component'
+import { ResetPasswordComponent } from './auth/reset-password/reset-password.component'
+//   NbAuthComponent,
+//   NbLoginComponent,
+//   NbLogoutComponent,
+//   NbRegisterComponent,
+//   NbRequestPasswordComponent,
+//   NbResetPasswordComponent,
+// } from './auth';
 
 export const routes: Routes = [
   {
@@ -15,31 +21,31 @@ export const routes: Routes = [
   },
   {
     path: 'auth',
-    component: NbAuthComponent,
+    component: LoginComponent,
     children: [
       {
         path: '',
-        component: NbLoginComponent,
+        component: LoginComponent,
       },
       {
         path: 'login',
-        component: NbLoginComponent,
+        component: LoginComponent,
       },
       {
         path: 'register',
-        component: NbRegisterComponent,
+        component: RegisterComponent,
       },
       {
         path: 'logout',
-        component: NbLogoutComponent,
+        component: LogoutComponent,
       },
       {
         path: 'request-password',
-        component: NbRequestPasswordComponent,
+        component: RequestPasswordComponent,
       },
       {
         path: 'reset-password',
-        component: NbResetPasswordComponent,
+        component: ResetPasswordComponent,
       },
     ],
   },
@@ -49,6 +55,7 @@ export const routes: Routes = [
 
 const config: ExtraOptions = {
   useHash: false,
+  preloadingStrategy: PreloadAllModules
 }
 
 @NgModule({

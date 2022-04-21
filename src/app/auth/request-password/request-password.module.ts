@@ -1,23 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { NbRequestPasswordComponent } from './request-password.component';
+import { RequestPasswordComponent } from './request-password.component';
+
 
 @NgModule({
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        IonicModule,
-        RouterModule.forChild([
-            {
-                path: '',
-                component: NbRequestPasswordComponent
-            }
-        ])
-    ],
-    // declarations: [NbRequestPasswordComponent]
+  declarations: [],
+  imports: [
+    CommonModule,
+    IonicModule,
+    RouterModule.forChild([
+      {
+        path: '',
+        component: RequestPasswordComponent
+      }
+    ])
+  ]
 })
-export class NbRequestPasswordModule { }
+export class RequestPasswordModule { }

@@ -1,10 +1,12 @@
 import { environment } from './../../../environments/environment'
 import { common } from './../common/common'
+import { Location } from '@angular/common'
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http'
 import { Message } from '../message/message'
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router'
-import { AlertController, NavController, Platform, LoadingController, ModalController } from '@ionic/angular'
+//import { NbDialogService, NbToastrService } from '@nebular/theme'
+import { AlertController, Platform, LoadingController, ModalController } from '@ionic/angular'
 
 
 /*
@@ -31,18 +33,18 @@ export class AuthServiceProvider {
   constructor(
     public router: Router,
     public modal: ModalController,
-    public alertCtrl: AlertController,
-    public navCtrl: NavController,
+    public alertCtrl: AlertController ,
     public loadingCtrl: LoadingController,
     public ahttp: HttpClient,
     public platform: Platform,
     public message: Message,
+    public location: Location,
     public activateRoute: ActivatedRoute) {
 
     this.platform.ready()
       .then((data) => {
 
-        this.user = localStorage.get(common.USER)
+        this.user = localStorage.getItem(common.USER)
         this.okStr = this.message.get('ok')
         this.cancelStr = this.message.get('cancel')
         this.closeStr = this.message.get('close')
@@ -60,7 +62,7 @@ export class AuthServiceProvider {
   }
 
   public goBack() {
-    this.navCtrl.pop()
+    this.location.back()
   }
 
   public nvr(data) {
@@ -74,7 +76,7 @@ export class AuthServiceProvider {
 
   public naviToMain() {
 
-    document.location.href = '/main'
+    this.location.go('/')
   }
 
   public getjwt(): Promise<string> {
@@ -93,9 +95,7 @@ export class AuthServiceProvider {
   }
 
   public goHome() {
-    if (this.navCtrl != null) {
-      this.navCtrl.navigateRoot('/home')
-    }
+    this.location.go('/')
   }
 
   public async showError(err: any) {
@@ -108,7 +108,7 @@ export class AuthServiceProvider {
       }
 
       if (err.status !== undefined && err.status === 400) {
-        this.navCtrl.navigateRoot('/auth/login')
+        this.location.go('/auth/login')
       }
     } catch (e) {
       this.presentAlert(e)
@@ -487,7 +487,7 @@ export class AuthServiceProvider {
     localStorage.removeItem(common.STAT_PARAMS)
     this.jwt = null
     this.user = null
-    this.navCtrl.navigateRoot('/auth/login')
+    this.location.go('/auth/login')
   }
 
   public isEmpty(value: string): boolean {
@@ -528,8 +528,8 @@ export class AuthServiceProvider {
     this.navigate('forward', uri, data)
   }
 
-  public navigateBack(uri: string, data?: any) {
-    this.navigate('back', uri, data)
+  public navigateBack(data?: any) {
+    this.navigate('back', null, data)
   }
 
   public navigate(direction, uri, data) {
@@ -537,11 +537,11 @@ export class AuthServiceProvider {
     if (data === undefined || data == null) {
       this.removeStorage(common.NAVIGATION_EXTRA).then(res => {
         switch (direction) {
-          case 'root': this.navCtrl.navigateRoot(uri)
+          case 'root': this.location.go(uri)
             break
-          case 'forward': this.navCtrl.navigateForward(uri)
+          case 'forward': this.router.navigate([uri])
             break
-          case 'back': this.navCtrl.navigateBack(uri)
+          case 'back': this.location.back()
             break
         }
       })
@@ -550,11 +550,11 @@ export class AuthServiceProvider {
       this.setStorage(common.NAVIGATION_EXTRA, data)
         .then(extraData => {
           switch (direction) {
-            case 'root': this.navCtrl.navigateRoot(uri)
+            case 'root': this.location.go(uri)
               break
-            case 'forward': this.navCtrl.navigateForward(uri)
+            case 'forward': this.router.navigate([uri])
               break
-            case 'back': this.navCtrl.navigateBack(uri)
+            case 'back': this.location.back()
               break
           }
         })

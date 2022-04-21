@@ -1,4 +1,4 @@
-import { ModuleWithProviders, NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
 import {
@@ -77,6 +77,9 @@ const PIPES = [
   imports: [CommonModule, MatRippleModule, ...NB_MODULES],
   exports: [CommonModule, MatRippleModule, ...PIPES, ...COMPONENTS],
   declarations: [...COMPONENTS, ...PIPES],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA
+  ]
 })
 export class ThemeModule {
   static forRoot(): ModuleWithProviders<ThemeModule> {

@@ -3,8 +3,5 @@
  * Copyright Akveo. All Rights Reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
- :host {
-  .form-group:last-of-type {
-    margin-bottom: 3rem;
-  }
-}
+import { Routes } from '@angular/router';
+export declare const routes: Routes;

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import {
   NbActionsModule,
   NbButtonModule,
@@ -65,5 +65,8 @@ import { FormsModule } from '@angular/forms';
     TrafficComponent,
     TrafficChartComponent,
   ],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA
+  ]
 })
 export class DashboardModule { }

@@ -3,8 +3,10 @@
  * Copyright Akveo. All Rights Reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
- :host {
-  .form-group:last-of-type {
-    margin-bottom: 3rem;
-  }
+
+@import '../../components/auth-block/auth-block.component.theme';
+
+// Create a theme
+@mixin nb-auth-components() {
+  @include nb-auth-block-theme();
 }

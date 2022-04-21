@@ -1,23 +1,22 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { NbLogoutComponent } from './logout.component';
+import { LogoutComponent } from './logout.component';
+
+
 
 @NgModule({
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        IonicModule,
-        RouterModule.forChild([
-            {
-                path: '',
-                component: NbLogoutComponent
-            }
-        ])
-    ],
-    // declarations: [DictationPage]
+  declarations: [],
+  imports: [
+    CommonModule,
+    IonicModule,
+    RouterModule.forChild([
+      {
+        path: '',
+        component: LogoutComponent
+      }
+    ])
+  ]
 })
-export class NbLogoutModule {}
+export class LogoutModule { }
