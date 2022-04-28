@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
 import { NbAuthSocialLink } from '@nebular/auth/auth.options';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms' ;
+// import { NbAuthService } from '@nebular/auth';
+// import { FormBuilder, FormGroup, Validators } from '@angular/forms' ;
 
 @Component({
   selector: 'ngx-login',
@@ -9,31 +10,36 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms' ;
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+  options: any = {};
+  redirectDelay: number;
   showMessages = {
     error: 'Cannot log in !!!',
     success: 'Login is successful !!'
   };
-  errors = [];
-  messages = [];
-  submitted = false;
+  strategy: string;
+  errors: string[];
+  messages: string[];
   user: any = {
-    email: '',
+    id: '',
     password: ''
   };
-  email = {
+  id: any = {
     dirty: false,
     invalid: false,
-    touched: false
+    touched: false,
+    errors: []
   };
-  password = {
+  password: any = {
     dirty: false,
     invalid: false,
-    touched: false
+    touched: false,
+    errors: []
   };
-  rememberMe = false;
+  submitted: boolean;
   socialLinks: NbAuthSocialLink[];
+  rememberMe: boolean;
 
-  constructor(public auth: AuthServiceProvider) { }
+  constructor(public auth: AuthServiceProvider,  protected cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
   }

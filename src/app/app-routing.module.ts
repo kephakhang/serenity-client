@@ -21,33 +21,8 @@ export const routes: Routes = [
   },
   {
     path: 'auth',
-    component: LoginComponent,
-    children: [
-      {
-        path: '',
-        component: LoginComponent,
-      },
-      {
-        path: 'login',
-        component: LoginComponent,
-      },
-      {
-        path: 'register',
-        component: RegisterComponent,
-      },
-      {
-        path: 'logout',
-        component: LogoutComponent,
-      },
-      {
-        path: 'request-password',
-        component: RequestPasswordComponent,
-      },
-      {
-        path: 'reset-password',
-        component: ResetPasswordComponent,
-      },
-    ],
+    loadChildren: () => import('./auth/auth.module')
+      .then(m => m.AuthModule),
   },
   { path: '', redirectTo: 'pages', pathMatch: 'full' },
   { path: '**', redirectTo: 'pages' },

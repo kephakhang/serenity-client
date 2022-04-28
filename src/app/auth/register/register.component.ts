@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NbAuthSocialLink } from '@nebular/auth/auth.options';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms' ;
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
 
 @Component({
@@ -16,31 +15,39 @@ export class RegisterComponent implements OnInit {
   errors = [];
   messages = [];
   submitted = false;
+  isTermsSelected = false;
   user: any = {
     name: '',
     email: '',
+    mobile: '',
     password: '',
     errors: []
   };
-  name = {
+  name: any = {
     dirty: false,
     invalid: false,
     touched: false,
     errors: []
   };
-  email = {
+  email: any = {
     dirty: false,
     invalid: false,
     touched: false,
     errors: []
   };
-  password = {
+  mobile: any = {
     dirty: false,
     invalid: false,
     touched: false,
     errors: []
   };
-  rePass = {
+  password: any = {
+    dirty: false,
+    invalid: false,
+    touched: false,
+    errors: []
+  };
+  rePass: any = {
     dirty: false,
     invalid: false,
     touched: false,
@@ -49,7 +56,7 @@ export class RegisterComponent implements OnInit {
   confirmPassword = '';
   rememberMe = false;
   socialLinks: NbAuthSocialLink[];
-  constructor(auth: AuthServiceProvider) { }
+  constructor(public auth: AuthServiceProvider, private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
   }

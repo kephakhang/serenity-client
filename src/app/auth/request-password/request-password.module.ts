@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
@@ -6,7 +6,7 @@ import { RequestPasswordComponent } from './request-password.component';
 
 
 @NgModule({
-  declarations: [],
+  declarations: [RequestPasswordComponent],
   imports: [
     CommonModule,
     IonicModule,
@@ -16,6 +16,9 @@ import { RequestPasswordComponent } from './request-password.component';
         component: RequestPasswordComponent
       }
     ])
+  ],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA
   ]
 })
 export class RequestPasswordModule { }

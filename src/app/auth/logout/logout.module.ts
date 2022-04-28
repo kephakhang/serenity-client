@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
@@ -7,7 +7,7 @@ import { LogoutComponent } from './logout.component';
 
 
 @NgModule({
-  declarations: [],
+  declarations: [LogoutComponent],
   imports: [
     CommonModule,
     IonicModule,
@@ -17,6 +17,9 @@ import { LogoutComponent } from './logout.component';
         component: LogoutComponent
       }
     ])
+  ],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA
   ]
 })
 export class LogoutModule { }

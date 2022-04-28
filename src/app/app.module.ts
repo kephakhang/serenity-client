@@ -6,6 +6,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { CoreModule } from './@core/core.module';
 import { ThemeModule } from './@theme/theme.module';
 import { AppComponent } from './app.component';
@@ -26,15 +27,11 @@ import {
   NbWindowModule,
   NbInputModule,
 } from '@nebular/theme';
-import { LoginComponent } from './auth/login/login.component';
-import { LogoutComponent } from './auth/logout/logout.component';
-import { RegisterComponent } from './auth/register/register.component';
-import { RequestPasswordComponent } from './auth/request-password/request-password.component';
-import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, LogoutComponent, RegisterComponent, RequestPasswordComponent, ResetPasswordComponent],
+  declarations: [AppComponent],
   imports: [
+    FormsModule,
     BrowserModule,
     BrowserAnimationsModule,
     IonicModule.forRoot(),
