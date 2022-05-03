@@ -1,17 +1,17 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
 import { NbAuthSocialLink } from '@nebular/auth/auth.options';
-import { LoginData } from '../model/login-data'
-import {NgForm} from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 // import { NbAuthService } from '@nebular/auth';
 // import { FormBuilder, FormGroup, Validators } from '@angular/forms' ;
 
 @Component({
-  selector: 'nb-login',
+  selector: 'ngx-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+  ngFormGroup: FormGroup;
   options: any = {};
   redirectDelay: number;
   showMessages = {
@@ -21,11 +21,10 @@ export class LoginComponent implements OnInit {
   strategy: string;
   errors: string[];
   messages: string[];
-  user: LoginData = new LoginData(
-    '',
-    '',
-    false
-  );
+  user: any = {
+    id: '',
+    password: ''
+  };
   id: any = {
     dirty: false,
     invalid: false,
@@ -38,7 +37,7 @@ export class LoginComponent implements OnInit {
     touched: false,
     errors: []
   };
-  submitted: boolean = false;
+  submitted: boolean;
   socialLinks: NbAuthSocialLink[];
   rememberMe: boolean;
 

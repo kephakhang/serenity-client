@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'ngx-auth',
+  selector: 'nb-auth',
   styleUrls: ['auth.component.scss'],
   template: `
     <ngx-no-sidebar-layout>

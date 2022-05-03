@@ -1,10 +1,10 @@
 import { ExtraOptions, RouterModule, Routes, PreloadAllModules } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { LoginComponent } from './auth/login/login.component'
-import { LogoutComponent } from './auth/logout/logout.component'
-import { RegisterComponent } from './auth/register/register.component'
-import { RequestPasswordComponent } from './auth/request-password/request-password.component'
-import { ResetPasswordComponent } from './auth/reset-password/reset-password.component'
+// import { LoginComponent } from './auth/login/login.component'
+// import { LogoutComponent } from './auth/logout/logout.component'
+// import { RegisterComponent } from './auth/register/register.component'
+// import { RequestPasswordComponent } from './auth/request-password/request-password.component'
+// import { ResetPasswordComponent } from './auth/reset-password/reset-password.component'
 //   NbAuthComponent,
 //   NbLoginComponent,
 //   NbLogoutComponent,

@@ -16,19 +16,20 @@
   </ul>
 </nb-alert>
 
-<form aria-labelledby="title">
+<form [formGroup]="ngFormGroup" aria-labelledby="title">
 
   <div class="form-control-group">
-    <label class="label" for="input-id">Email or Mobile:</label>
+    <label class="label" for="input-email">Email or Mobile:</label>
     <input nbInput
            fullWidth
            [(ngModel)]="user.id"
-           name="id"
+           formControlName="id"
            id="input-id"
            pattern="(?:\d{10}|\w+@\w+\.\w{2,3})"
            placeholder="Email or Mobile"
            fieldSize="large"
            autofocus
+           [status]="id.dirty ? (id.invalid  ? 'danger' : 'success') : 'basic'"
            [required]="true"
            [attr.aria-invalid]="id.invalid && id.touched ? true : null">
     <ng-container *ngIf="id.invalid && id.touched">
@@ -49,11 +50,12 @@
     <input nbInput type="text"
            fullWidth
            [(ngModel)]="user.password"
-           name="password"
+           formControlName="password"
            type="password"
            id="input-password"
            placeholder="Password"
            fieldSize="large"
+           [status]="password.dirty ? (password.invalid  ? 'danger' : 'success') : 'basic'"
            [required]="true"
            minlength="7"
            maxlength="32"
@@ -72,14 +74,14 @@
   </div>
 
   <div class="form-control-group accept-group">
-    <nb-checkbox name="rememberMe" [(ngModel)]="user.rememberMe" *ngIf="rememberMe">Remember me</nb-checkbox>
+    <nb-checkbox formControlName="rememberMe" [(ngModel)]="user.rememberMe" *ngIf="rememberMe">Remember me</nb-checkbox>
   </div>
 
   <button nbButton
           fullWidth
           status="primary"
           size="large"
-          [disabled]="submitted"
+          [disabled]="submitted || !form.valid"
           (click)='login()'
           [class.btn-pulse]="submitted">
     Log In

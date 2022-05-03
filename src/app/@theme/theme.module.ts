@@ -31,6 +31,7 @@ import {
   NumberWithCommasPipe,
 } from './pipes';
 import {
+  NoSidebarLayoutComponent,
   OneColumnLayoutComponent,
   ThreeColumnsLayoutComponent,
   TwoColumnsLayoutComponent,
@@ -61,6 +62,7 @@ const COMPONENTS = [
   FooterComponent,
   SearchInputComponent,
   TinyMCEComponent,
+  NoSidebarLayoutComponent,
   OneColumnLayoutComponent,
   ThreeColumnsLayoutComponent,
   TwoColumnsLayoutComponent,
