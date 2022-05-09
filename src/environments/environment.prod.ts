@@ -5,5 +5,7 @@
  */
 export const environment = {
   production: true,
-  apiHostUrl: 'https://serenity.emoldino.com'
+  apiHostUrl: 'https://serenity.emoldino.com',
+  emailIdOnly: true,
+  socialLogin: false,
 };

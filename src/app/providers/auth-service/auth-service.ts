@@ -1,11 +1,11 @@
 import { environment } from './../../../environments/environment'
-import { common } from './../common/common'
+import { Common } from './../common/common'
 import { Location } from '@angular/common'
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http'
 import { Message } from '../message/message'
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router'
-//import { NbDialogService, NbToastrService } from '@nebular/theme'
+import { NbDialogService, NbToastrService } from '@nebular/theme'
 import { AlertController, Platform, LoadingController, ModalController } from '@ionic/angular'
 
 
@@ -18,10 +18,13 @@ import { AlertController, Platform, LoadingController, ModalController } from '@
 export class AuthServiceProvider {
   public apiHostUrl = environment.apiHostUrl
   public jwt: string = null
-  public language = 'ko'
-  public okStr = null
-  public cancelStr = null
-  public closeStr = null
+  public lang = 'en'
+  public confirmStr = 'Confirm'
+  public notificationStr = 'Notification'
+  public okStr = 'Ok'
+  public errorStr = 'Error'
+  public cancelStr = 'Cancel'
+  public closeStr = 'Close'
   public package: string = null
   public version: string = null
   public root: string = "/"
@@ -44,17 +47,48 @@ export class AuthServiceProvider {
     this.platform.ready()
       .then((data) => {
 
-        this.user = localStorage.getItem(common.USER)
-        this.okStr = this.message.get('ok')
-        this.cancelStr = this.message.get('cancel')
-        this.closeStr = this.message.get('close')
+        this.user = localStorage.getItem(Common.USER)
+
 
         this.root = ""
         this.baseHref = "./"
         this.package = 'com.emoldino.serenity'
         this.version = '1.0.0'
 
+        let lang = localStorage.getItem(Common.LANG)
+        if (!lang) {
+          lang = this.getUsersLocale('en_US').split('_')[0]
+        }
+
+        if (!this.message.langMapArr[lang]) {
+          this.lang = 'en'
+        } else {
+          this.lang = lang
+          localStorage.setItem(Common.LANG, this.lang)
+        }
+
+        this.okStr = this.message.get('global.ok')
+        this.errorStr = this.message.get('global.error')
+        this.confirmStr = this.message.get('global.confirm')
+        this.cancelStr = this.message.get('global.cancel')
+        this.closeStr = this.message.get('global.close')
+        this.notificationStr = this.message.get('global.notification')
       })
+  }
+
+  getUsersLocale(defaultValue: string): string {
+    if (typeof window === 'undefined' || typeof window.navigator === 'undefined') {
+      return defaultValue;
+    }
+    const wn = window.navigator as any;
+    let lang = wn.languages ? wn.languages[0] : defaultValue;
+    lang = lang || wn.language || wn.browserLanguage || wn.userLanguage;
+    return lang;
+  }
+
+  public switchLanguage(lang: string) {
+    this.lang = lang
+    this.message.setLang(lang)
   }
 
   public setTitle(title) {
@@ -81,15 +115,18 @@ export class AuthServiceProvider {
 
   public getjwt(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      if (this.jwt == null) {
-        this.user = localStorage.getItem(common.USER)
-        if (this.user != null) {
+      this.user = localStorage.getItem(Common.USER)
+      if (this.user) {
+        if (this.user.jwt) {
+          this.jwt = this.user.jwt
           resolve(this.user.jwt)
         } else {
-          resolve(null)
+          this.navigateRoot('/auth/login')
+          reject('JWT is not found')
         }
       } else {
-        resolve(this.jwt)
+        this.navigateRoot('/auth/login')
+        reject('JWT is not found')
       }
     })
   }
@@ -103,6 +140,8 @@ export class AuthServiceProvider {
 
       if (err.message !== undefined) {
         this.presentAlert(err.message)
+      } else if(err instanceof String) {
+        this.presentAlert(err as string)
       } else {
         this.presentAlert(JSON.stringify(err))
       }
@@ -128,26 +167,41 @@ export class AuthServiceProvider {
     return loading
   }
 
-  public async presentAlert(message: string) {
+  public async presentAlert(nick: string) {
 
-    if (message === undefined || message == null || message === '') {
-      message = 'unreachable url: Please contact the administrator.'
+    let message = 'empty or undefined message: Please contact the administrator.'
+
+    if (!nick && nick.trim() !== '') {
+      message = this.message.get(nick)
+      if (!message) {
+        message = nick
+      }
     }
 
+    
     // const alertController = document.querySelector('ion-alert-controller')
     // await alertController.componentOnReady()
 
     const alert = await this.alertCtrl.create({
-      header: '안내',
+      header: this.notificationStr,
       subHeader: '',
       message: message,
-      buttons: ['확인'] // this.auth.message.get('general', 'close')]
+      buttons: [this.okStr] // this.auth.message.get('general', 'close')]
     })
 
     return await alert.present()
   }
 
-  public async promptAlert(prompt): Promise<string> {
+  public async promptAlert(nick): Promise<string> {
+
+    let prompt = 'empty or undefined message: Please contact the administrator.'
+
+    if (!nick && nick.trim() !== '') {
+      prompt = this.message.get(nick)
+      if (!prompt) {
+        prompt = nick
+      }
+    }
 
     let resolveFunction: (confirm: string) => void
     let rejectFunction: (confirm: string) => void
@@ -156,20 +210,20 @@ export class AuthServiceProvider {
       rejectFunction = reject
     })
     const alert = await this.alertCtrl.create({
-      header: '알림',
+      header: this.notificationStr,
       subHeader: '',
       inputs: [{ type: 'text', name: 'description', placeholder: '비디오 설명', id: 'videoDescription' }],
       message: prompt,
       cssClass: 'alertCustomCss',
       buttons: [{
-        text: '취소',
+        text: this.cancelStr,
         role: 'cancel',
         handler: (data) => {
           rejectFunction(null)
         }
       },
       {
-        text: '확인',
+        text: this.okStr,
         role: 'ok',
         handler: (data) => {
 
@@ -340,35 +394,47 @@ export class AuthServiceProvider {
 
   public async post(uri: string, body: any) {
 
-    return new Promise((resolve, reject) => {
-      this.getjwt().then(async (value) => {
-        let jwt: string = value
-        if (this.isEmpty(jwt)) {
-          jwt = ''
-        }
+    if (uri.startsWith('/sso/')) {
+      return new Promise(async (resolve, reject) => {
 
-        const headers = new HttpHeaders({
-          'Content-Type': 'application/json;charset=UTF-8',
-          'jwt': jwt
-        })
-        // headers.append('Content-Type', 'application/json;charset=UTF-8');
-        // if( !this.isEmpty(jwt) ) {
-        //   headers.append('jwt', jwt)
-        //   console.log('jwt : '+jwt)
-        // }
-        // console.log(headers.get('jwt'))
-        const loading = await this.showLoading()
-        this.ahttp.post(this.apiHostUrl + uri, body, { headers: headers })
-          .subscribe((res: any) => {
-            loading.dismiss()
-            resolve(res)
-          }, (err) => {
-            loading.dismiss()
-            reject(err)
+          const headers = new HttpHeaders({
+            'Content-Type': 'application/json;charset=UTF-8',
           })
+          const loading = await this.showLoading()
+          this.ahttp.post(this.apiHostUrl + uri, body, { headers: headers })
+            .subscribe((res: any) => {
+              loading.dismiss()
+              resolve(res)
+            }, (err) => {
+              loading.dismiss()
+              reject(err)
+            })
       })
+    } else {
+      return new Promise((resolve, reject) => {
+        this.getjwt().then(async (value) => {
+          let jwt: string = value
+          if (this.isEmpty(jwt)) {
+            jwt = ''
+          }
 
-    })
+          const headers = new HttpHeaders({
+            'Content-Type': 'application/json;charset=UTF-8',
+            'Authorization': 'Bearert ' + jwt
+          })
+          const loading = await this.showLoading()
+          this.ahttp.post(this.apiHostUrl + uri, body, { headers: headers })
+            .subscribe((res: any) => {
+              loading.dismiss()
+              resolve(res)
+            }, (err) => {
+              loading.dismiss()
+              reject(err)
+            })
+        })
+
+      })
+    }
   }
 
   public async put(uri: string, body: any) {
@@ -473,7 +539,7 @@ export class AuthServiceProvider {
 
   public login(credential: any) {
 
-    return this.post('/sso/login', { email: credential.email, password: credential.password })
+    return this.post('/sso/login', credential)
   }
 
   public signup(userInfo) {
@@ -481,10 +547,10 @@ export class AuthServiceProvider {
   }
 
   public logout() {
-    localStorage.removeItem(common.USER)
-    localStorage.removeItem(common.PARAMS)
-    localStorage.removeItem(common.VIDEO)
-    localStorage.removeItem(common.STAT_PARAMS)
+    localStorage.removeItem(Common.USER)
+    localStorage.removeItem(Common.PARAMS)
+    localStorage.removeItem(Common.VIDEO)
+    localStorage.removeItem(Common.STAT_PARAMS)
     this.jwt = null
     this.user = null
     this.location.go('/auth/login')
@@ -510,7 +576,7 @@ export class AuthServiceProvider {
     }
     else {
       return new Promise((resolve, reject) => {
-        this.user = localStorage.get(common.USER)
+        this.user = localStorage.get(Common.USER)
         if (this.user === null) {
           reject('User not found !!!')
         } else {
@@ -535,11 +601,11 @@ export class AuthServiceProvider {
   public navigate(direction, uri, data) {
 
     if (data === undefined || data == null) {
-      this.removeStorage(common.NAVIGATION_EXTRA).then(res => {
+      this.removeStorage(Common.NAVIGATION_EXTRA).then(res => {
         switch (direction) {
           case 'root': this.location.go(uri)
             break
-          case 'forward': this.router.navigate([uri])
+          case 'forward': this.location.go(uri)
             break
           case 'back': this.location.back()
             break
@@ -547,12 +613,12 @@ export class AuthServiceProvider {
       })
 
     } else {
-      this.setStorage(common.NAVIGATION_EXTRA, data)
+      this.setStorage(Common.NAVIGATION_EXTRA, data)
         .then(extraData => {
           switch (direction) {
             case 'root': this.location.go(uri)
               break
-            case 'forward': this.router.navigate([uri])
+            case 'forward': this.location.go(uri)
               break
             case 'back': this.location.back()
               break
@@ -564,9 +630,9 @@ export class AuthServiceProvider {
   public getNavigationExtra() {
 
     return new Promise((resolve, reject) => {
-      this.getStorage(common.NAVIGATION_EXTRA)
+      this.getStorage(Common.NAVIGATION_EXTRA)
         .then(data => {
-          //this.removeStorage(common.NAVIGATION_EXTRA)
+          //this.removeStorage(Common.NAVIGATION_EXTRA)
           resolve(data)
         }, err => {
           reject(err)
@@ -578,9 +644,9 @@ export class AuthServiceProvider {
     let navigationExtras: NavigationExtras = {
       queryParams: params
     }
-    this.setStorage(common.NAVIGATION_EXTRA, params)
+    this.setStorage(Common.NAVIGATION_EXTRA, params)
       .then(res => {
-        this.router.navigate([uri], navigationExtras)
+        this.navigate('forward', uri, navigationExtras)
       })
   }
 

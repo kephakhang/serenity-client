@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'ngx-no-sidebar-layout',
-  styleUrls: ['no-sidebar-layout.scss'],
+  styleUrls: ['no-sidebar.layout.scss'],
   template: `
     <nb-layout windowMode>
       <nb-layout-column>

@@ -9,6 +9,7 @@ import { RegisterComponent } from './register/register.component';
 import { RequestPasswordComponent } from './request-password/request-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { NB_WINDOW, NbAlertModule, NbButtonModule, NbCardModule, NbCheckboxModule, NbIconModule, NbInputModule, NbLayoutModule } from '@nebular/theme';
+import { TermsComponent } from './register/terms/terms.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { NB_WINDOW, NbAlertModule, NbButtonModule, NbCardModule, NbCheckboxModul
     LoginComponent,
     RegisterComponent,
     RequestPasswordComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    TermsComponent
   ],
   imports: [
     CommonModule,

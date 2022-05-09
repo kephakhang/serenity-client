@@ -5,10 +5,10 @@
 
 
 
-<p>login works!</p>
+<!--p>login works!</p-->
 <h1 id="title" class="title">Login</h1>
 
-<p class="sub-title">Hello! Log in with your email or mobile.</p>
+<p class="sub-title">{{greeting}}</p>
 
 <nb-alert *ngIf="showMessages.error && errors?.length && !submitted" outline="danger" role="alert">
   <p class="alert-title"><b>Oh snap!</b></p>
@@ -41,10 +41,10 @@
            [attr.aria-invalid]="id.invalid && id.touched ? true : null">
     <ng-container *ngIf="id.invalid && id.touched">
       <p class="caption status-danger" *ngIf="id.errors?.required">
-        Email is required!
+        {{idRequired}}
       </p>
       <p class="caption status-danger" *ngIf="id.errors?.pattern">
-        Email should be the real one!
+        {{idShouldBeReal}}
       </p>
     </ng-container>
   </div>
@@ -68,13 +68,10 @@
            [attr.aria-invalid]="password.invalid && password.touched ? true : null">
     <ng-container *ngIf="password.invalid && password.touched ">
       <p class="caption status-danger" *ngIf="password.errors?.required">
-        Password is required!
+        {{ auth.message.get('auth.passwordRequired') }}
       </p>
       <p class="caption status-danger" *ngIf="password.errors?.minlength || password.errors?.maxlength">
-        Password should contain
-        from {{ 7 }}
-        to {{ 32 }}
-        characters
+        {{ auth.message.get('auth.passwordLengthRange') }}
       </p>
     </ng-container>
   </div>
@@ -94,11 +91,12 @@
   </button>
 </form>
 
-<section *ngIf="socialLinks && socialLinks.length > 0" class="links" aria-label="Social sign in">
+<section *ngIf="socialLogin && socialLinks && socialLinks.length > 0" class="links" aria-label="Social sign in">
   or enter with:
   <div class="socials">
     <ng-container *ngFor="let socialLink of socialLinks">
       <a *ngIf="socialLink.link"
+         (click)="snsLogin(socialLink)"
          [routerLink]="socialLink.link"
          [attr.target]="socialLink.target"
          [attr.class]="socialLink.icon"
@@ -106,7 +104,16 @@
         <nb-icon *ngIf="socialLink.icon; else title" [icon]="socialLink.icon"></nb-icon>
         <ng-template #title>{{ socialLink.title }}</ng-template>
       </a>
-      <a *ngIf="socialLink.url"
+      <!--apple-signin *ngIf="socialLink.title === 'Apple'"
+          [state]="apple.state"
+          [redirectURI]="apple.redirectURI"
+          [scope]="apple.scope"
+          [clientId]="apple.clientId"
+          [color]="apple.color"
+          [type]="apple.type"></apple-signin-->
+
+      <a *ngIf="socialLink.title !== 'Apple'"
+         (click)="snsLogin(socialLink)"
          [attr.href]="socialLink.url"
          [attr.target]="socialLink.target"
          [attr.class]="socialLink.icon"
@@ -119,5 +126,5 @@
 </section>
 
 <section class="another-action" aria-label="Register">
-  Don't have an account? <a class="text-link" routerLink="../register">Register</a>
+  {{ auth.message.get('auth.login.noAccount') }}<a class="text-link" routerLink="../register">Register</a>
 </section>

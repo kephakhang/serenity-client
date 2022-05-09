@@ -10,5 +10,18 @@
 
 export const environment = {
   production: false,
-  apiHostUrl: 'http://localhost:8080'
+  apiHostUrl: 'http://localhost:8080',
+  emailIdOnly: true,
+  socialLogin: false,
+  sns : {
+    facebook : {
+      clientId: '897337357764734'
+    },
+    microsoft: {
+      clientId: '8c8dddc6-fd3d-4e03-b947-c62d77c202ca'
+    },
+    google: {
+      clientId: '07245424895-n3k5c8q9tj88uvem3d571gqnjs22jl3c.apps.googleusercontent.com'
+    }
+  }
 };

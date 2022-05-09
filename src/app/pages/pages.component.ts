@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthServiceProvider } from '../providers/auth-service/auth-service';
 import { MENU_ITEMS } from './pages-menu';
 
 @Component({
@@ -14,4 +15,8 @@ import { MENU_ITEMS } from './pages-menu';
 export class PagesComponent {
 
   menu = MENU_ITEMS;
+
+  constructor(public auth: AuthServiceProvider) {
+    this.auth.getjwt()
+  }
 }
