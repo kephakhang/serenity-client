@@ -5,5 +5,10 @@ export const Common = {
   STAT_PARAMS : 'stat_params',
   VIDEO : 'video',
   NAVIGATION_EXTRA : 'navigation_extra',
-  LANG: 'locale.lang'
+  LANG: 'locale.lang',
+  LIGHT: 'material-light',
+  DARK: 'material-dark',
+  THEME: 'app.theme',
+  REGISTER_USER: 'register.user',
+  LOGIN_USER: 'login.user'
 };

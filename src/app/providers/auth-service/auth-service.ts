@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core'
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http'
 import { Message } from '../message/message'
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router'
-import { NbDialogService, NbToastrService } from '@nebular/theme'
+import { NbDialogService, NbToastrService, NbThemeService } from '@nebular/theme'
 import { AlertController, Platform, LoadingController, ModalController } from '@ionic/angular'
 
 
@@ -42,6 +42,7 @@ export class AuthServiceProvider {
     public platform: Platform,
     public message: Message,
     public location: Location,
+    public theme: NbThemeService,
     public activateRoute: ActivatedRoute) {
 
     this.platform.ready()
@@ -67,6 +68,9 @@ export class AuthServiceProvider {
           localStorage.setItem(Common.LANG, this.lang)
         }
 
+        let themeVal: string = environment.defaultTheme
+        this.changeTheme(themeVal)
+
         this.okStr = this.message.get('global.ok')
         this.errorStr = this.message.get('global.error')
         this.confirmStr = this.message.get('global.confirm')
@@ -75,6 +79,65 @@ export class AuthServiceProvider {
         this.notificationStr = this.message.get('global.notification')
       })
   }
+
+  setItem(key: string, value: any): void {
+    if (value instanceof String) {
+      return localStorage.setItem(key, value as string)
+    } else {
+      return localStorage.setItem(key, JSON.stringify(value))
+    }
+  }
+
+  getItem(key: string): any {
+    const value = localStorage.getItem(key)
+    try {
+      return JSON.parse(value)
+    } catch(ex) {
+      return value
+    }
+  }
+
+  removeItem(key: string): void {
+    localStorage.removeItem(key)
+  }
+
+  public isValidName(name: string): boolean {
+    if (name.trim() !== '' && /^[\w'\-,.][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{3,}$/.test(name)) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  public isValidMobile(mobile: string): boolean {
+    if (mobile.trim() !== '' && /^[+]?[({0,1}[0-9]{1,4}[)]{0,1}[\s]?[-/0-9]*$/.test(mobile)) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  public isValidEmail(email: string): boolean {
+    if (email.trim() !== '' && /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email)) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  public isValidPassword(password: string): boolean {
+    if (password.trim() !== '' && /^(?=.*[A-Z].)(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{7,32}$/.test(password)) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  changeTheme(themeName: string) {
+    this.theme.changeTheme(themeName)
+    localStorage.setItem(Common.THEME, themeName)
+  }
+
 
   getUsersLocale(defaultValue: string): string {
     if (typeof window === 'undefined' || typeof window.navigator === 'undefined') {
@@ -138,8 +201,14 @@ export class AuthServiceProvider {
   public async showError(err: any) {
     try {
 
-      if (err.message !== undefined) {
-        this.presentAlert(err.message)
+      if (err.error && err.error.body) {
+        if (err.error.body.message && err.error.body.message[this.lang]) {
+          this.presentAlert(err.error.body.message[this.lang])
+        } else if (err.error.body.description) {
+          this.presentAlert(err.error.body.description)
+        } else {
+          this.presentAlert(JSON.stringify(err.error.body))
+        }
       } else if(err instanceof String) {
         this.presentAlert(err as string)
       } else {
@@ -150,7 +219,7 @@ export class AuthServiceProvider {
         this.location.go('/auth/login')
       }
     } catch (e) {
-      this.presentAlert(e)
+      this.presentAlert(JSON.stringify(e))
     }
   }
 
@@ -167,7 +236,7 @@ export class AuthServiceProvider {
     return loading
   }
 
-  public async presentAlert(nick: string) {
+  public async presentAlertWithNick(nick: string) {
 
     let message = 'empty or undefined message: Please contact the administrator.'
 
@@ -177,6 +246,22 @@ export class AuthServiceProvider {
         message = nick
       }
     }
+
+    
+    // const alertController = document.querySelector('ion-alert-controller')
+    // await alertController.componentOnReady()
+
+    const alert = await this.alertCtrl.create({
+      header: this.notificationStr,
+      subHeader: '',
+      message: message,
+      buttons: [this.okStr] // this.auth.message.get('general', 'close')]
+    })
+
+    return await alert.present()
+  }
+
+  public async presentAlert(message: string) {
 
     
     // const alertController = document.querySelector('ion-alert-controller')
@@ -228,7 +313,7 @@ export class AuthServiceProvider {
         handler: (data) => {
 
           if (data.description === undefined || data.description == null || data.description.trim() === '') {
-            this.presentAlert(this.message.get('filetransfer.desc.needed'))
+            this.presentAlertWithNick(this.message.get('filetransfer.desc.needed'))
             return false
           }
           else {
@@ -650,13 +735,13 @@ export class AuthServiceProvider {
       })
   }
 
-  public isMobileNumber(str: string): boolean {
-    return /^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/.test(str)
-  }
+  // public isMobileNumber(str: string): boolean {
+  //   return /^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/.test(str)
+  // }
 
-  public isValidEmail(str: string): boolean {
-    return (/^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\w+\.)+\w+$/.test(str) || /^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\w+\-)+\w+\.+\w+$/.test(str))
-  }
+  // public isValidEmail(str: string): boolean {
+  //   return (/^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\w+\.)+\w+$/.test(str) || /^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\w+\-)+\w+\.+\w+$/.test(str))
+  // }
 
   public getImageUrl(id): string {
     return this.apiHostUrl + 'api/attachment/image?id=' + id

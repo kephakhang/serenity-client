@@ -34,6 +34,7 @@ import {
   NbToastrModule,
   NbWindowModule,
   NbInputModule,
+  NbFormFieldModule
 } from '@nebular/theme';
 
 @NgModule({
@@ -42,6 +43,7 @@ import {
     SocialLoginModule,
     AppleSigninModule,
     FormsModule,
+    NbFormFieldModule,
     ReactiveFormsModule,
     BrowserModule,
     BrowserAnimationsModule,

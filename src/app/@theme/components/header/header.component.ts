@@ -7,6 +7,8 @@ import { map, takeUntil } from 'rxjs/operators';
 import { Subject, Observable } from 'rxjs';
 import { RippleService } from '../../../@core/utils/ripple.service';
 import { AuthServiceProvider } from '../../../providers/auth-service/auth-service';
+import { en } from '../../../providers/message/i18n/en';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'ngx-header',
@@ -50,7 +52,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ];
 
-  currentTheme = 'material-dark';
+  currentTheme = environment.defaultTheme;
 
   userMenu = [ { title: 'Profile' }, { title: 'Log out' } ];
 
@@ -58,13 +60,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     public auth: AuthServiceProvider,
     private sidebarService: NbSidebarService,
     private menuService: NbMenuService,
-    private themeService: NbThemeService,
     // private userService: UserData,
     private layoutService: LayoutService,
     private breakpointService: NbMediaBreakpointsService,
     private rippleService: RippleService,
   ) {
-    this.materialTheme$ = this.themeService.onThemeChange()
+    this.materialTheme$ = this.auth.theme.onThemeChange()
       .pipe(map(theme => {
         const themeName: string = theme?.name || '';
         return themeName.toLowerCase().startsWith('material');
@@ -72,7 +73,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.currentTheme = this.themeService.currentTheme;
+    this.currentTheme = this.auth.theme.currentTheme;
 
     this.auth.getUser().then(user => {
       this.user = user
@@ -84,14 +85,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     //   .subscribe((users: any) => this.user = users.nick);
 
     const { xl } = this.breakpointService.getBreakpointsMap();
-    this.themeService.onMediaQueryChange()
+    this.auth.theme.onMediaQueryChange()
       .pipe(
         map(([, currentBreakpoint]) => currentBreakpoint.width < xl),
         takeUntil(this.destroy$),
       )
       .subscribe((isLessThanXl: boolean) => this.userPictureOnly = isLessThanXl);
 
-    this.themeService.onThemeChange()
+    this.auth.theme.onThemeChange()
       .pipe(
         map(({ name }) => name),
         takeUntil(this.destroy$),
@@ -108,7 +109,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   changeTheme(themeName: string) {
-    this.themeService.changeTheme(themeName);
+    this.auth.theme.changeTheme(themeName);
   }
 
   toggleSidebar(): boolean {

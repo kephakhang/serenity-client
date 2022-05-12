@@ -4,7 +4,9 @@ import { NbAuthSocialLink } from '@nebular/auth/auth.options';
 import { RegisterData } from  '../model/register-data'
 import { TermsComponent } from './terms/terms.component';
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
+import { environment } from '../../../environments/environment';
 import { Common } from '../../providers/common/common'
+import { env } from 'process';
 
 @Component({
   selector: 'ngx-register',
@@ -18,45 +20,18 @@ export class RegisterComponent implements OnInit {
   };
   errors = [];
   messages = [];
-  submitted = false;
-  enableTerms = true;
-  isTermsSelected = false;
-  user: RegisterData = new RegisterData(
+  submitted = false
+  enableTerms = true
+  isTermsSelected = false
+  showPassword = 'password'
+  user: RegisterData = localStorage.getItem(Common.REGISTER_USER) ?  this.auth.getItem(Common.REGISTER_USER) as RegisterData  : new RegisterData(
     '',
     '',
     '',
     ''
   );
-  name: any = {
-    dirty: false,
-    invalid: false,
-    touched: false,
-    errors: []
-  };
-  email: any = {
-    dirty: false,
-    invalid: false,
-    touched: false,
-    errors: []
-  };
-  mobile: any = {
-    dirty: false,
-    invalid: false,
-    touched: false,
-    errors: []
-  };
-  password: any = {
-    dirty: false,
-    invalid: false,
-    touched: false,
-    errors: []
-  };
-  rePass: any = {
-    dirty: false,
-    invalid: false,
-    touched: false,
-    errors: []
-  };
+  name = environment.name
+  password = environment.password
   confirmPassword = '';
   rememberMe = false;
   socialLinks: NbAuthSocialLink[];
@@ -66,24 +41,80 @@ export class RegisterComponent implements OnInit {
   }
 
   public register(): void {
+
     if (this.user.password !== this.confirmPassword) {
-      this.auth.presentAlert(this.auth.message.get('auth.register.passwordMismatch'))
+      this.auth.presentAlertWithNick('auth.register.passwordMismatch')
+      this.showMessages.error = this.auth.message.get('auth.register.passwordMismatch')
+    } else if (!this.isTermsSelected) {
+      this.auth.presentAlertWithNick('auth.register.termsNotSelected')
+      this.showMessages.error = this.auth.message.get('auth.register.termsNotSelected')
     } else {
-      this.user.mobile = this.user.mobile.replace('-', '')
+      this.user.mobile = this.user.mobile.replace(/-/g, '')
+      this.submitted = true
       this.auth.signup(this.user).then((user: any) => {
         if (user) {
           localStorage.setItem(Common.USER, user)
           this.auth.naviToMain()
         } else {
           this.auth.showError('auth.register.unknownError')
+          this.submitted = false
+          this.showMessages.error = this.auth.message.get('auth.register.unknownError')
         }
       }, err => {
         this.auth.showError(err)
+        this.submitted = false
+        this.showMessages.error = (err instanceof String) ? err as string : this.auth.message.get('auth.register.unknownError')
       })
     }
   }
 
-  public openTerms(): void {
-    this.auth.navigateForward('/auth/register/terms')
+  public isNotValidName(): boolean {
+    if (!this.user.name) return true
+    const isValid = this.auth.isValidName(this.user.name)
+    if (isValid) {
+      localStorage.setItem(Common.REGISTER_USER, JSON.stringify(this.user as any))
+    }
+    return !isValid
+  }
+
+  public isNotValidMobile(): boolean {
+    if (!this.user.mobile) return true
+    const isValid = this.auth.isValidMobile(this.user.mobile)
+    if (isValid) {
+      this.auth.setItem(Common.REGISTER_USER, this.user)
+    }
+    return !isValid
+  }
+
+  public isNotValidEmail(): boolean {
+    if (!this.user.email) return true
+    const isValid = this.auth.isValidEmail(this.user.email)
+    if (isValid) {
+      this.auth.setItem(Common.REGISTER_USER, this.user)
+    }
+    return !isValid
+  }
+
+  public isNotValidPassword(): boolean {
+    if (!this.user.password) return true
+    const isValid = this.auth.isValidPassword(this.user.password)
+    if (isValid) {
+      this.auth.setItem(Common.REGISTER_USER, this.user)
+    }
+    return !isValid
+  }
+
+  public isNotReadyToSubmit(): boolean {
+    if (this.user.password !== this.confirmPassword ||
+        this.isNotValidName() || this.isNotValidMobile() ||
+        this.isNotValidEmail() || this.isNotValidMobile() || !this.isTermsSelected) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  public toggleShowPassword(): void {
+    this.showPassword = this.showPassword === 'password' ? 'text' : 'password'
   }
 }

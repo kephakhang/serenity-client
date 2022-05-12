@@ -8,4 +8,16 @@ export const environment = {
   apiHostUrl: 'https://serenity.emoldino.com',
   emailIdOnly: true,
   socialLogin: false,
+  defaultTheme: 'material-light',
+  sns : {
+    facebook : {
+      clientId: ''
+    },
+    microsoft: {
+      clientId: ''
+    },
+    google: {
+      clientId: ''
+    }
+  }
 };
