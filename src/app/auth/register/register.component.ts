@@ -2,11 +2,9 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NbDialogService } from '@nebular/theme'
 import { NbAuthSocialLink } from '@nebular/auth/auth.options';
 import { RegisterData } from  '../model/register-data'
-import { TermsComponent } from './terms/terms.component';
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
 import { environment } from '../../../environments/environment';
 import { Common } from '../../providers/common/common'
-import { env } from 'process';
 
 @Component({
   selector: 'ngx-register',
@@ -24,7 +22,7 @@ export class RegisterComponent implements OnInit {
   enableTerms = true
   isTermsSelected = false
   showPassword = 'password'
-  user: RegisterData = localStorage.getItem(Common.REGISTER_USER) ?  this.auth.getItem(Common.REGISTER_USER) as RegisterData  : new RegisterData(
+  user: RegisterData =  new RegisterData(
     '',
     '',
     '',
@@ -38,6 +36,13 @@ export class RegisterComponent implements OnInit {
   constructor(public auth: AuthServiceProvider, private cd: ChangeDetectorRef, public dialogService: NbDialogService) { }
 
   ngOnInit(): void {
+    this.auth.getUser().then(user => {
+      this.auth.goHome()
+    }, err => {
+      this.auth.getStorage(Common.REGISTER_USER).then(user => {
+        this.user = user
+      })
+    })
   }
 
   public register(): void {
@@ -53,8 +58,8 @@ export class RegisterComponent implements OnInit {
       this.submitted = true
       this.auth.signup(this.user).then((user: any) => {
         if (user) {
-          localStorage.setItem(Common.USER, user)
-          this.auth.naviToMain()
+          this.auth.presentAlertWithNick('auth.register.success')
+          this.auth.navigateRoot('/auth/login')
         } else {
           this.auth.showError('auth.register.unknownError')
           this.submitted = false
@@ -72,7 +77,7 @@ export class RegisterComponent implements OnInit {
     if (!this.user.name) return true
     const isValid = this.auth.isValidName(this.user.name)
     if (isValid) {
-      localStorage.setItem(Common.REGISTER_USER, JSON.stringify(this.user as any))
+      this.auth.setStorage(Common.REGISTER_USER, JSON.stringify(this.user as any))
     }
     return !isValid
   }
@@ -81,7 +86,7 @@ export class RegisterComponent implements OnInit {
     if (!this.user.mobile) return true
     const isValid = this.auth.isValidMobile(this.user.mobile)
     if (isValid) {
-      this.auth.setItem(Common.REGISTER_USER, this.user)
+      this.auth.setStorage(Common.REGISTER_USER, this.user)
     }
     return !isValid
   }
@@ -90,7 +95,7 @@ export class RegisterComponent implements OnInit {
     if (!this.user.email) return true
     const isValid = this.auth.isValidEmail(this.user.email)
     if (isValid) {
-      this.auth.setItem(Common.REGISTER_USER, this.user)
+      this.auth.setStorage(Common.REGISTER_USER, this.user)
     }
     return !isValid
   }
@@ -99,7 +104,7 @@ export class RegisterComponent implements OnInit {
     if (!this.user.password) return true
     const isValid = this.auth.isValidPassword(this.user.password)
     if (isValid) {
-      this.auth.setItem(Common.REGISTER_USER, this.user)
+      this.auth.setStorage(Common.REGISTER_USER, this.user)
     }
     return !isValid
   }

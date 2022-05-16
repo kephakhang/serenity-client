@@ -11,6 +11,7 @@ import {
   SocialUser,
 } from 'angularx-social-login'
 import { environment } from '../../../environments/environment'
+import { Common } from '../../providers/common/common'
 import { env } from 'process'
 
 @Component({
@@ -19,6 +20,7 @@ import { env } from 'process'
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+  password = environment.password
   greeting: string = ''
   idRequired: string = ''
   idShouldBeReal: string = ''
@@ -36,18 +38,6 @@ export class LoginComponent implements OnInit {
     '',
     false
   )
-  id: any = {
-    dirty: false,
-    invalid: false,
-    touched: false,
-    errors: []
-  }
-  password: any = {
-    dirty: false,
-    invalid: false,
-    touched: false,
-    errors: []
-  }
   submitted: boolean = false
   socialLogin: boolean = environment.socialLogin
   socialLinks: NbAuthSocialLink[] = [
@@ -82,7 +72,6 @@ export class LoginComponent implements OnInit {
       title: 'Apple',
     },
   ]
-  rememberMe: boolean
   apple: {
     state: 'Initial user authentication request',
     redirectURI: '',
@@ -92,7 +81,7 @@ export class LoginComponent implements OnInit {
     type: 'sign in',
   }
 
-  constructor(private authService: SocialAuthService, public auth: AuthServiceProvider,  protected cd: ChangeDetectorRef) { }
+  constructor(/* private snsAuth: SocialAuthService, */public auth: AuthServiceProvider,  protected cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     if (environment.emailIdOnly) {
@@ -101,14 +90,83 @@ export class LoginComponent implements OnInit {
       this.idRequired = this.auth.message.get('auth.login.emailRequired')
     } else {
       this.greeting = this.auth.message.get('auth.login.greeting')
+      this.idShouldBeReal = this.auth.message.get('auth.login.idShouldBeReal')
       this.idRequired = this.auth.message.get('auth.login.idRequired')
+    }
+
+    this.auth.getUser().then(user => {
+      this.auth.goHome()
+    }, err => {
+      this.auth.removeStorage(Common.LOGIN_USER)
+      // this.auth.getStorage(Common.LOGIN_USER).then(user => {
+      //   this.user = user
+      // })
+    })
+  }
+
+  public isNotValidMobile(): boolean {
+    if (!this.user.id) return true
+    const isValid = this.auth.isValidMobile(this.user.id)
+    return !isValid
+  }
+
+  public isNotValidEmail(): boolean {
+    if (!this.user.id) return true
+    const isValid = this.auth.isValidEmail(this.user.id)
+    return !isValid
+  }
+
+  public isNotValidId(): boolean {
+    const isValid = environment.emailIdOnly ? !this.isNotValidEmail() : !this.isNotValidEmail() || !this.isNotValidMobile
+    if (isValid && this.user.rememberMe) {
+      this.auth.setStorage(Common.LOGIN_USER, this.user)
+    }
+    return !isValid
+  }
+
+  public isNotValidPassword(): boolean {
+    if (!this.user.password) return true
+    const isValid = this.auth.isValidPassword(this.user.password)
+    if (isValid && this.user.rememberMe) {
+      this.auth.setStorage(Common.LOGIN_USER, this.user)
+    }
+    return !isValid
+  }
+
+  public toggleRemeberMe(): void {
+    if (this.user.rememberMe) {
+      this.auth.removeStorage(Common.LOGIN_USER)
+    }
+  }
+
+  public isNotReadyToSubmit(): boolean {
+    if (this.isNotValidId() || this.isNotValidPassword()) {
+      return true
+    } else {
+      return false
     }
   }
 
   login(): void {
-
+    this.submitted = true
+    this.auth.login(this.user).then((user: any) => {
+      this.submitted = false
+      if (user) {
+        this.auth.setStorage(Common.USER, user)
+        this.auth.goHome()
+      } else {
+        this.auth.showError('auth.login.unknownError')
+        this.submitted = false
+        this.showMessages.error = this.auth.message.get('auth.login.unknownError')
+      }
+    }, err => {
+      this.submitted = false
+      this.auth.showError(err)
+      this.submitted = false
+      this.showMessages.error = (err instanceof String) ? err as string : this.auth.message.get('auth.register.unknownError')
+    })
   }
-
+/*
   signInWithGoogle():  Promise<SocialUser>  {
     return this.authService.signIn(GoogleLoginProvider.PROVIDER_ID);
   }
@@ -124,7 +182,7 @@ export class LoginComponent implements OnInit {
   signInWithAWS():  Promise<SocialUser>  {
     return this.authService.signIn(AmazonLoginProvider.PROVIDER_ID)
   }
-
+*/
   // signWithKakao():  Promise<SocialUser>  {
   //   return new Promise<SocialUser>((resolve, reject) => {
   //     let loginOptions = {};
@@ -148,6 +206,7 @@ export class LoginComponent implements OnInit {
   // }
 
   snsLogin(sns: NbAuthSocialLink) {
+    /*
     switch(sns.title.toLowerCase()) {
       case 'google': 
         this.signInWithGoogle()
@@ -165,5 +224,6 @@ export class LoginComponent implements OnInit {
       //   this.signWithKakao()
       //   break
     }
+    */
   }
 }

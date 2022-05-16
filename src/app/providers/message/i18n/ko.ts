@@ -25,7 +25,8 @@ export const ko = {
             mobileShouldBeReal: "Mobile should be the real one.",
             idRequired: "Email or Mobile is required.",
             emailRequired: "Eamil is required",
-            noAccount: "Don't have an account? "
+            noAccount: "Don't have an account? ",
+            unknownError: "Unknow error occurs when login, please contact the administrator."
 
         },
         logout: {
@@ -40,6 +41,7 @@ export const ko = {
             mobileRequired: "Mobile is required",
             termsNotSelected: "You have to read terms & conditions and select checkbox for the agreement.",
             nameLengthError: `Name should contain from ${environment.name.min} to ${environment.name.max} characters`,
+            success: "User registraion is done successfully."
 
         },
         request: {

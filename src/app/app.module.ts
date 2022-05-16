@@ -7,6 +7,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA, LOCALE_ID } from '@angular/core';
+import { IonicStorageModule, Storage } from '@ionic/storage-angular';
 import { CoreModule } from './@core/core.module';
 import { ThemeModule } from './@theme/theme.module';
 import { AppComponent } from './app.component';
@@ -62,37 +63,42 @@ import {
     }),
     CoreModule.forRoot(),
     ThemeModule.forRoot(),
+    IonicStorageModule.forRoot({
+      name: '__mydb',
+      driverOrder: ['indexeddb','sqlite','websql']
+    })
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: LOCALE_ID, useValue: 'en-US' },
-    {
-      provide: 'SocialAuthServiceConfig',
-      useValue: {
-        autoLogin: false,
-        providers: [
-          {
-            id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider(
-              environment.sns.google.clientId
-            )
-          },
-          {
-            id: FacebookLoginProvider.PROVIDER_ID,
-            provider: new FacebookLoginProvider(environment.sns.facebook.clientId)
-          },
-          {
-            id: MicrosoftLoginProvider.PROVIDER_ID,
-            provider: new FacebookLoginProvider(environment.sns.microsoft.clientId)
-          }
-        ],
-        onError: (err) => {
-          console.error(err);
-        }
-      } as SocialAuthServiceConfig,
-    },
+    // {
+    //   provide: 'SocialAuthServiceConfig',
+    //   useValue: {
+    //     autoLogin: false,
+    //     providers: [
+    //       {
+    //         id: GoogleLoginProvider.PROVIDER_ID,
+    //         provider: new GoogleLoginProvider(
+    //           environment.sns.google.clientId
+    //         )
+    //       },
+    //       {
+    //         id: FacebookLoginProvider.PROVIDER_ID,
+    //         provider: new FacebookLoginProvider(environment.sns.facebook.clientId)
+    //       },
+    //       {
+    //         id: MicrosoftLoginProvider.PROVIDER_ID,
+    //         provider: new FacebookLoginProvider(environment.sns.microsoft.clientId)
+    //       }
+    //     ],
+    //     onError: (err) => {
+    //       console.log(JSON.stringify(err));
+    //     }
+    //   } as SocialAuthServiceConfig,
+    // },
     HttpClient,
     Message,
+    Storage,
     AuthServiceProvider,
   ],
   schemas: [

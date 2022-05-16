@@ -1,6 +1,5 @@
-import { Component } from '@angular/core';
-import { AuthServiceProvider } from '../providers/auth-service/auth-service';
-import { MENU_ITEMS } from './pages-menu';
+import { Component } from '@angular/core'
+import { MENU_ITEMS } from './pages-menu'
 
 @Component({
   selector: 'ngx-pages',
@@ -16,7 +15,6 @@ export class PagesComponent {
 
   menu = MENU_ITEMS;
 
-  constructor(public auth: AuthServiceProvider) {
-    this.auth.getjwt()
+  constructor() {
   }
 }

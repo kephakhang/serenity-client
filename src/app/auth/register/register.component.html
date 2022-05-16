@@ -144,7 +144,7 @@
         Password confirmation is required!
       </p>
       <p class="caption status-danger" *ngIf="user.password !== confirmPassword">
-        {{auth.message.get('auth.register.passwordMismatch')}}
+        {{auth.message.get('auth.passwordMismatch')}}
       </p>
     </ng-container>
   </div>

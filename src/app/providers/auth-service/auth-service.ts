@@ -7,6 +7,8 @@ import { Message } from '../message/message'
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router'
 import { NbDialogService, NbToastrService, NbThemeService } from '@nebular/theme'
 import { AlertController, Platform, LoadingController, ModalController } from '@ionic/angular'
+import { Storage } from '@ionic/storage-angular'
+import { rejects } from 'assert'
 
 
 /*
@@ -17,7 +19,6 @@ import { AlertController, Platform, LoadingController, ModalController } from '@
 @Injectable()
 export class AuthServiceProvider {
   public apiHostUrl = environment.apiHostUrl
-  public jwt: string = null
   public lang = 'en'
   public confirmStr = 'Confirm'
   public notificationStr = 'Notification'
@@ -31,6 +32,7 @@ export class AuthServiceProvider {
   public baseHref: string = "/"
   public title: string = ''
   public user: any = null
+  storage: Storage | null = null
   fileChooser: any
 
   constructor(
@@ -43,12 +45,24 @@ export class AuthServiceProvider {
     public message: Message,
     public location: Location,
     public theme: NbThemeService,
+    public _storage: Storage,
     public activateRoute: ActivatedRoute) {
 
     this.platform.ready()
-      .then((data) => {
+      .then(async (data) => {
 
-        this.user = localStorage.getItem(Common.USER)
+        const storage = await this._storage.create();
+        this.storage = storage;
+
+        this.getStorage(Common.USER).then(user => {
+          if (user && user.jwt) {
+            this.user = user
+          } else {
+            this.user = null
+          }
+        }, err => {
+          this.user = null
+        })
 
 
         this.root = ""
@@ -56,17 +70,22 @@ export class AuthServiceProvider {
         this.package = 'com.emoldino.serenity'
         this.version = '1.0.0'
 
-        let lang = localStorage.getItem(Common.LANG)
-        if (!lang) {
-          lang = this.getUsersLocale('en_US').split('_')[0]
-        }
+        let lang = this.getUsersLocale('en_US').split('_')[0]
+        this.getStorage(Common.LANG).then(value => {
+          if (value) {
+            lang = value
+          }
 
-        if (!this.message.langMapArr[lang]) {
+          if (!this.message.langMapArr[lang]) {
+            this.lang = 'en'
+          } else {
+            this.lang = lang
+            this.setStorage(Common.LANG, this.lang)
+          }
+        }, err => {
           this.lang = 'en'
-        } else {
-          this.lang = lang
-          localStorage.setItem(Common.LANG, this.lang)
-        }
+        })
+        
 
         let themeVal: string = environment.defaultTheme
         this.changeTheme(themeVal)
@@ -80,25 +99,9 @@ export class AuthServiceProvider {
       })
   }
 
-  setItem(key: string, value: any): void {
-    if (value instanceof String) {
-      return localStorage.setItem(key, value as string)
-    } else {
-      return localStorage.setItem(key, JSON.stringify(value))
-    }
-  }
-
-  getItem(key: string): any {
-    const value = localStorage.getItem(key)
-    try {
-      return JSON.parse(value)
-    } catch(ex) {
-      return value
-    }
-  }
-
-  removeItem(key: string): void {
-    localStorage.removeItem(key)
+  public setLang(newLang): Promise<any> {
+    this.lang = newLang;
+    return this.setStorage(Common.LANG, newLang)  
   }
 
   public isValidName(name: string): boolean {
@@ -149,11 +152,6 @@ export class AuthServiceProvider {
     return lang;
   }
 
-  public switchLanguage(lang: string) {
-    this.lang = lang
-    this.message.setLang(lang)
-  }
-
   public setTitle(title) {
     this.title = title
   }
@@ -170,32 +168,8 @@ export class AuthServiceProvider {
     }
   }
 
-
-  public naviToMain() {
-
-    this.location.go('/')
-  }
-
-  public getjwt(): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      this.user = localStorage.getItem(Common.USER)
-      if (this.user) {
-        if (this.user.jwt) {
-          this.jwt = this.user.jwt
-          resolve(this.user.jwt)
-        } else {
-          this.navigateRoot('/auth/login')
-          reject('JWT is not found')
-        }
-      } else {
-        this.navigateRoot('/auth/login')
-        reject('JWT is not found')
-      }
-    })
-  }
-
   public goHome() {
-    this.location.go('/')
+    this.router.navigate(['/dashboard'])
   }
 
   public async showError(err: any) {
@@ -216,7 +190,7 @@ export class AuthServiceProvider {
       }
 
       if (err.status !== undefined && err.status === 400) {
-        this.location.go('/auth/login')
+        this.router.navigate(['/auth/login'])
       }
     } catch (e) {
       this.presentAlert(JSON.stringify(e))
@@ -326,31 +300,18 @@ export class AuthServiceProvider {
     alert.present()
 
     return promise
-
-    // const alertController = document.querySelector('ion-alert-controller')
-    // await alertController.componentOnReady()
-
   }
 
   public setStorage(key: string, value: any): Promise<any> {
-    return new Promise<any>(resolve => {
-      localStorage.setItem(key, value)
-      resolve(value)
-    })
+    return this.storage.set(key, value)
   }
 
   public getStorage(key: string): Promise<any> {
-    return new Promise<any>(resolve => {
-      let value = localStorage.getItem(key)
-      resolve(value)
-    })
+    return this.storage.get(key)      
   }
 
   public removeStorage(key: string): Promise<any> {
-    return new Promise<any>(resolve => {
-      let value = localStorage.removeItem(key)
-      resolve(value)
-    })
+    return this.storage.remove(key)
   }
 
   //common/http ================================================== [
@@ -383,51 +344,54 @@ export class AuthServiceProvider {
     return formData
   }
 
-  public async get(uri: string, params?: HttpParams) {
+  public async get(uri: string, params?: HttpParams, isLoading?: boolean) {
 
     return new Promise(async (resolve, reject) => {
 
-      this.getjwt().then(async (value) => {
-        var jwt: string = value
-        if (this.isEmpty(jwt)) {
-          jwt = ''
-        }
-
         const headers = new HttpHeaders({
+          'Accept': 'application/json;charset=UTF-8',
           'Content-Type': 'application/x-www-form-urlencoded',
-          'jwt': jwt
+          'Authorization': 'Bearer ' + this.user?.jwt
         })
 
-        const loading = await this.showLoading()
-        let options: any = { headers: headers }
-        if (params !== undefined && params != null) {
-          options = { params: params, headers: headers }
-        }
-        this.ahttp.get(this.apiHostUrl + uri, options)
-          .subscribe((res: any) => {
-            loading.dismiss()
-            resolve(res)
-          }, (err: any) => {
-            loading.dismiss()
-            reject(err)
-          })
+        if (isLoading) {
+          const loading = await this.showLoading()
+          let options: any = { headers: headers }
+          if (params !== undefined && params != null) {
+            options = { params: params, headers: headers }
+          }
+          this.ahttp.get(this.apiHostUrl + uri, options)
+            .subscribe((res: any) => {
+              loading.dismiss()
+              resolve(res)
+            }, (err: any) => {
+              loading.dismiss()
+              reject(err)
+            })
+          } else {
+            let options: any = { headers: headers }
+            if (params !== undefined && params != null) {
+              options = { params: params, headers: headers }
+            }
+            this.ahttp.get(this.apiHostUrl + uri, options)
+              .subscribe((res: any) => {
+                resolve(res)
+              }, (err: any) => {
+                reject(err)
+              })
+          }
       })
-    })
   }
 
 
   public async delete(uri: string, params?: HttpParams) {
 
     return new Promise(async (resolve, reject) => {
-      this.getjwt().then(async (value) => {
-        let jwt: string = value
-        if (this.isEmpty(jwt)) {
-          jwt = ''
-        }
 
         const headers = new HttpHeaders({
+          'Accept': 'application/json;charset=UTF-8',
           'Content-Type': 'application/x-www-form-urlencoded',
-          'jwt': jwt
+          'Authorization': 'Bearer ' + this.user?.jwt
         })
 
         let loading = await this.showLoading()
@@ -445,20 +409,16 @@ export class AuthServiceProvider {
             reject(err)
           })
       })
-    })
   }
 
   public async post2(uri: string, body: any) {
 
-    return new Promise((resolve, reject) => {
-      this.getjwt().then(async (value) => {
-        let jwt: string = value
-        if (this.isEmpty(jwt)) {
-          jwt = ''
-        }
+    return new Promise(async(resolve, reject) => {
+
         const headers = new HttpHeaders({
+          'Accept': 'application/json;charset=UTF-8',
           'Content-Type': 'multipart/form-data',
-          'jwt': jwt
+          'Authorization': 'Bearer ' + this.user?.jwt
         })
 
         const formData: FormData = this.anyToFormData(body)
@@ -473,7 +433,6 @@ export class AuthServiceProvider {
             reject(err)
           })
       })
-    })
   }
 
 
@@ -483,6 +442,7 @@ export class AuthServiceProvider {
       return new Promise(async (resolve, reject) => {
 
           const headers = new HttpHeaders({
+            'Accept': 'application/json;charset=UTF-8',
             'Content-Type': 'application/json;charset=UTF-8',
           })
           const loading = await this.showLoading()
@@ -496,16 +456,12 @@ export class AuthServiceProvider {
             })
       })
     } else {
-      return new Promise((resolve, reject) => {
-        this.getjwt().then(async (value) => {
-          let jwt: string = value
-          if (this.isEmpty(jwt)) {
-            jwt = ''
-          }
+      return new Promise(async(resolve, reject) => {
 
           const headers = new HttpHeaders({
+            'Accept': 'application/json;charset=UTF-8',
             'Content-Type': 'application/json;charset=UTF-8',
-            'Authorization': 'Bearert ' + jwt
+            'Authorization':'Bearer ' + this.user?.jwt
           })
           const loading = await this.showLoading()
           this.ahttp.post(this.apiHostUrl + uri, body, { headers: headers })
@@ -517,22 +473,17 @@ export class AuthServiceProvider {
               reject(err)
             })
         })
-
-      })
     }
   }
 
   public async put(uri: string, body: any) {
 
-    return new Promise((resolve, reject) => {
-      this.getjwt().then(async (value) => {
-        let jwt: string = value
-        if (this.isEmpty(jwt)) {
-          jwt = ''
-        }
+    return new Promise(async(resolve, reject) => {
+
         const headers = new HttpHeaders({
+          'Accept': 'application/json;charset=UTF-8',
           'Content-Type': 'application/json;charset=UTF-8',
-          'jwt': jwt
+          'Authorization':'Bearer ' + this.user?.jwt
         })
 
         const formData: FormData = this.anyToFormData(body)
@@ -547,20 +498,16 @@ export class AuthServiceProvider {
             reject(err)
           })
       })
-    })
   }
 
   public async put2(uri: string, body: any) {
 
-    return new Promise((resolve, reject) => {
-      this.getjwt().then(async (value) => {
-        let jwt: string = value
-        if (this.isEmpty(jwt)) {
-          jwt = ''
-        }
+    return new Promise(async(resolve, reject) => {
+
         const headers = new HttpHeaders({
+          'Accept': 'application/json;charset=UTF-8',
           'Content-Type': 'application/json;charset=UTF-8',
-          'jwt': jwt
+          'Authorization': 'Bearer ' + this.user?.jwt
         })
 
         //const formData: FormData = this.anyToFormData(body)
@@ -575,23 +522,20 @@ export class AuthServiceProvider {
             reject(err)
           })
       })
-    })
   }
 
   public async postMultipart(uri: string, body: any, params: URLSearchParams) {
 
-    return new Promise((resolve, reject) => {
-      this.getjwt().then(async (value) => {
-        const headers = new HttpHeaders()
-        if (params == null) {
-          params = new URLSearchParams()
-        }
-        const jwt: string = value
-        if (jwt !== undefined && jwt != null) {
-          headers.append('jwt', jwt)
-        }
-        headers.append('Accept', 'application/json;charset=UTF-8')
-        headers.append('Content-Type', 'multipart/form-data')
+    return new Promise(async(resolve, reject) => {
+
+      if (params === null) {
+        params = new URLSearchParams()
+      }
+        const headers = new HttpHeaders({
+          'Accept': 'application/json;charset=UTF-8',
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer ' + this.user?.jwt
+        })
         const loading = await this.showLoading()
         this.ahttp.post(this.apiHostUrl + uri, body, { headers: headers })
           .subscribe((res: any) => {
@@ -604,7 +548,6 @@ export class AuthServiceProvider {
           })
 
       })
-    })
 
   }
 
@@ -632,13 +575,12 @@ export class AuthServiceProvider {
   }
 
   public logout() {
-    localStorage.removeItem(Common.USER)
-    localStorage.removeItem(Common.PARAMS)
-    localStorage.removeItem(Common.VIDEO)
-    localStorage.removeItem(Common.STAT_PARAMS)
-    this.jwt = null
+    this.removeStorage(Common.USER)
+    this.removeStorage(Common.PARAMS)
+    this.removeStorage(Common.VIDEO)
+    this.removeStorage(Common.STAT_PARAMS)
     this.user = null
-    this.location.go('/auth/login')
+    this.router.navigate(['/auth/login'])
   }
 
   public isEmpty(value: string): boolean {
@@ -654,21 +596,31 @@ export class AuthServiceProvider {
    */
   public getUser(): Promise<any> {
 
-    if (this.user !== undefined && this.user != null) {
       return new Promise((resolve, reject) => {
-        resolve(this.user)
-      })
-    }
-    else {
-      return new Promise((resolve, reject) => {
-        this.user = localStorage.get(Common.USER)
-        if (this.user === null) {
+        this.user = this.getStorage(Common.USER).then(user => {
+          if (this.user && this.user.jwt) {
+            this.get('/api/v1/user').then(user => {
+              if (user) {
+                this.setStorage(Common.USER, user)
+                resolve(this.user) 
+              } else {
+                this.removeStorage(Common.USER)
+                reject('User not found !!!')
+              }
+            }, err => {
+              this.removeStorage(Common.USER)
+              reject('User not found !!!')
+            })
+            
+          } else {
+            this.removeStorage(Common.USER)
+            reject('User not found !!!')
+          }
+        }, err => {
+          console.log(JSON.stringify(err))
           reject('User not found !!!')
-        } else {
-          resolve(this.user)
-        }
+        })
       })
-    }
   }
 
   public navigateRoot(uri: string, data?: any) {
@@ -688,9 +640,9 @@ export class AuthServiceProvider {
     if (data === undefined || data == null) {
       this.removeStorage(Common.NAVIGATION_EXTRA).then(res => {
         switch (direction) {
-          case 'root': this.location.go(uri)
+          case 'root': this.router.navigate([uri])
             break
-          case 'forward': this.location.go(uri)
+          case 'forward': this.router.navigate([uri])
             break
           case 'back': this.location.back()
             break
@@ -701,9 +653,9 @@ export class AuthServiceProvider {
       this.setStorage(Common.NAVIGATION_EXTRA, data)
         .then(extraData => {
           switch (direction) {
-            case 'root': this.location.go(uri)
+            case 'root': this.router.navigate([uri])
               break
-            case 'forward': this.location.go(uri)
+            case 'forward': this.router.navigate([uri])
               break
             case 'back': this.location.back()
               break

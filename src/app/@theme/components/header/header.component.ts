@@ -80,9 +80,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }, err => {
       this.auth.logout()
     })
-    // this.userService.getUsers()
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe((users: any) => this.user = users.nick);
 
     const { xl } = this.breakpointService.getBreakpointsMap();
     this.auth.theme.onMediaQueryChange()

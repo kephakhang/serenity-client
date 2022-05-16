@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core'
 import { Common } from '../common/common'
 import { ko } from './i18n/ko';
 import { en } from './i18n/en';
@@ -28,11 +28,7 @@ export class Message {
     constructor() {
     }
 
-    public setLang(newLang) {
-        this.lang = newLang;
-        localStorage.setItem(Common.LANG, newLang)
-    }
-
+    
     public get(nick) {
         if (!nick) return 'Error : null or undefined string '
         const paths: string[] = nick.trim().split('.')

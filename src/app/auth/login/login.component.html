@@ -10,7 +10,7 @@
 
 <p class="sub-title">{{greeting}}</p>
 
-<nb-alert *ngIf="showMessages.error && errors?.length && !submitted" outline="danger" role="alert">
+<!--nb-alert *ngIf="showMessages.error && errors?.length && !submitted" outline="danger" role="alert">
   <p class="alert-title"><b>Oh snap!</b></p>
   <ul class="alert-message-list">
     <li *ngFor="let error of errors" class="alert-message">{{ error }}</li>
@@ -22,7 +22,7 @@
   <ul class="alert-message-list">
     <li *ngFor="let message of messages" class="alert-message">{{ message }}</li>
   </ul>
-</nb-alert>
+</nb-alert-->
 
 <form aria-labelledby="title">
 
@@ -33,17 +33,16 @@
            [(ngModel)]="user.id"
            name="id"
            id="input-id"
-           pattern="(?:\d{10}|\w+@\w+\.\w{2,3})"
            placeholder="Email or Mobile"
            fieldSize="large"
            autofocus
            [required]="true"
-           [attr.aria-invalid]="id.invalid && id.touched ? true : null">
-    <ng-container *ngIf="id.invalid && id.touched">
-      <p class="caption status-danger" *ngIf="id.errors?.required">
+           [attr.aria-invalid]="isNotValidId() ? true : null">
+    <ng-container>
+      <p class="caption status-danger" *ngIf="user.id.trim() === ''">
         {{idRequired}}
       </p>
-      <p class="caption status-danger" *ngIf="id.errors?.pattern">
+      <p class="caption status-danger" *ngIf="isNotValidId()">
         {{idShouldBeReal}}
       </p>
     </ng-container>
@@ -52,7 +51,7 @@
   <div class="form-control-group">
     <span class="label-with-link">
       <label class="label" for="input-password">Password:</label>
-      <a class="forgot-password caption-2" routerLink="../request-password">Forgot Password?</a>
+      <a class="forgot-password caption-2" routerLink="/auth/request-password">Forgot Password?</a>
     </span>
     <input nbInput type="text"
            fullWidth
@@ -63,28 +62,28 @@
            placeholder="Password"
            fieldSize="large"
            [required]="true"
-           minlength="7"
-           maxlength="32"
-           [attr.aria-invalid]="password.invalid && password.touched ? true : null">
-    <ng-container *ngIf="password.invalid && password.touched ">
-      <p class="caption status-danger" *ngIf="password.errors?.required">
+           [minlength]="password.min"
+           [maxlength]="password.max"
+           [attr.aria-invalid]="isNotValidPassword() ? true : null">
+    <ng-container *ngIf="user.id.trim() !== ''">
+      <p class="caption status-danger" *ngIf="user.password.trim() === ''">
         {{ auth.message.get('auth.passwordRequired') }}
       </p>
-      <p class="caption status-danger" *ngIf="password.errors?.minlength || password.errors?.maxlength">
-        {{ auth.message.get('auth.passwordLengthRange') }}
+      <p class="caption status-danger" *ngIf="isNotValidPassword()">
+        {{ auth.message.get('auth.passwordRuleError') }}
       </p>
     </ng-container>
   </div>
 
   <div class="form-control-group accept-group">
-    <nb-checkbox name="rememberMe" [(ngModel)]="user.rememberMe" *ngIf="rememberMe">Remember me</nb-checkbox>
+    <nb-checkbox name="rememberMe" [(ngModel)]="user.rememberMe" (click)="toggleRemeberMe()">Remember me</nb-checkbox>
   </div>
 
   <button nbButton
           fullWidth
           status="primary"
           size="large"
-          [disabled]="submitted"
+          [disabled]="isNotReadyToSubmit()"
           (click)='login()'
           [class.btn-pulse]="submitted">
     Log In

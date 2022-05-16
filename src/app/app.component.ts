@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
     @Inject(LOCALE_ID) public locale: string) {
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.analytics.trackPageViews();
     this.seoService.trackCanonicalChanges();
   }
