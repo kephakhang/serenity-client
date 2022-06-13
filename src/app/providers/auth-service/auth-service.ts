@@ -85,7 +85,7 @@ export class AuthServiceProvider {
         }, err => {
           this.lang = 'en'
         })
-        
+
 
         let themeVal: string = environment.defaultTheme
         this.changeTheme(themeVal)
@@ -101,7 +101,7 @@ export class AuthServiceProvider {
 
   public setLang(newLang): Promise<any> {
     this.lang = newLang;
-    return this.setStorage(Common.LANG, newLang)  
+    return this.setStorage(Common.LANG, newLang)
   }
 
   public isValidName(name: string): boolean {
@@ -121,7 +121,7 @@ export class AuthServiceProvider {
   }
 
   public isValidEmail(email: string): boolean {
-    if (email.trim() !== '' && /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email)) {
+    if (email.trim() !== '' && /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
       return true
     } else {
       return false
@@ -221,7 +221,7 @@ export class AuthServiceProvider {
       }
     }
 
-    
+
     // const alertController = document.querySelector('ion-alert-controller')
     // await alertController.componentOnReady()
 
@@ -237,7 +237,7 @@ export class AuthServiceProvider {
 
   public async presentAlert(message: string) {
 
-    
+
     // const alertController = document.querySelector('ion-alert-controller')
     // await alertController.componentOnReady()
 
@@ -307,7 +307,7 @@ export class AuthServiceProvider {
   }
 
   public getStorage(key: string): Promise<any> {
-    return this.storage.get(key)      
+    return this.storage.get(key)
   }
 
   public removeStorage(key: string): Promise<any> {
@@ -602,7 +602,7 @@ export class AuthServiceProvider {
             this.get('/api/v1/user').then(user => {
               if (user) {
                 this.setStorage(Common.USER, user)
-                resolve(this.user) 
+                resolve(this.user)
               } else {
                 this.removeStorage(Common.USER)
                 reject('User not found !!!')
@@ -611,7 +611,7 @@ export class AuthServiceProvider {
               this.removeStorage(Common.USER)
               reject('User not found !!!')
             })
-            
+
           } else {
             this.removeStorage(Common.USER)
             reject('User not found !!!')

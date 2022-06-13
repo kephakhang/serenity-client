@@ -12,6 +12,10 @@ import { Common } from '../../providers/common/common'
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
+  isInvalidName = false
+  isInvalidEmail = false
+  isInvalidMobile = false
+  isInvalidPassword = false
   showMessages = {
     error: 'Cannot log in !!!',
     success: 'Login is successful !!'
@@ -48,6 +52,35 @@ export class RegisterComponent implements OnInit {
   }
 
   public register(): void {
+
+    if (this.isNotValidName()) {
+      this.isInvalidName = true
+    } else {
+      this.isInvalidName = false
+    }
+
+    if (this.isNotValidEmail()) {
+      this.isInvalidEmail = true
+    } else {
+      this.isInvalidEmail = false
+    }
+
+    if (this.isNotValidMobile()) {
+      this.isInvalidMobile = true
+    } else {
+      this.isInvalidMobile = false
+    }
+
+    if (this.isNotValidPassword()) {
+      this.isInvalidPassword = true
+    } else {
+      this.isInvalidPassword = false
+    }
+
+    if (this.isInvalidName || this.isInvalidEmail || this.isInvalidMobile || this.isInvalidPassword || this.user.password !== this.confirmPassword) {
+      return
+    }
+
 
     if (this.user.password !== this.confirmPassword) {
       this.auth.presentAlertWithNick('auth.register.passwordMismatch')

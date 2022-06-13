@@ -18,18 +18,19 @@
            fullWidth
            [(ngModel)]="user.id"
            name="id"
+           #id="ngModel"
            id="input-id"
            placeholder="Email or Mobile"
            fieldSize="large"
            autofocus
+           shape="round"
            [required]="true"
-           [attr.aria-invalid]="isNotValidId() ? true : null"
            >
     <ng-container>
       <p class="caption status-danger" *ngIf="user.id.trim() === ''">
         {{idRequired}}
       </p>
-      <p class="caption status-danger" *ngIf="isNotValidId()">
+      <p class="caption status-danger" *ngIf="isInvalidId">
         {{idShouldBeReal}}
       </p>
     </ng-container>
@@ -45,14 +46,14 @@
                 fullWidth
                 [(ngModel)]="user.password"
                 name="password"
-                [type]="getInputType()"
+                 type="password"
                 id="input-password"
                 placeholder="Password"
                 fieldSize="large"
+                 shape="round"
                 [required]="true"
                 [minlength]="password.min"
                 [maxlength]="password.max"
-                    [attr.aria-invalid]="isNotValidPassword() ? true : null"
                 >
             <!--button nbSuffix nbButton ghost (click)="toggleShowPassword()">
             <nb-icon [icon]="showPassword ? 'eye-outline' : 'eye-off-2-outline'"
@@ -65,7 +66,7 @@
       <p class="caption status-danger" *ngIf="user.password.trim() === ''">
         {{ auth.message.get('auth.passwordRequired') }}
       </p>
-      <p class="caption status-danger" *ngIf="isNotValidPassword()">
+      <p class="caption status-danger" *ngIf="isInvalidPassword">
         {{ auth.message.get('auth.passwordRuleError') }}
       </p>
     </ng-container>
@@ -81,8 +82,8 @@
           fullWidth
           status="primary"
           size="large"
-          [disabled]="isNotReadyToSubmit()"
           (click)='login()'
+          [disabled]="submitted"
           [class.btn-pulse]="submitted">
     Log In
   </button>

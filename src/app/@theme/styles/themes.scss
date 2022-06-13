@@ -1,10 +1,16 @@
+
+@import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "~@angular/material/prebuilt-themes/pink-bluegrey.css";
+@import "~@angular/material/prebuilt-themes/purple-green.css";
+
 // @nebular theming framework
-@import '../../../../node_modules/@nebular/theme/styles/theming';
+@import '~@nebular/theme/styles/theming';
 // @nebular out of the box themes
-@import '../../../../node_modules/@nebular/theme/styles/themes';
+@import '~@nebular/theme/styles/themes';
 // material themes
-@import './material/material-dark';
-@import './material/material-light';
+@import './material/_material-dark';
+@import './material/_material-light';
 
 $nb-themes: nb-register-theme((
   layout-padding-top: 2.25rem,

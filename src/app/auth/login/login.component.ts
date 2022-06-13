@@ -21,6 +21,8 @@ import { env } from 'process'
 })
 export class LoginComponent implements OnInit {
   password = environment.password
+  isInvalidId = false
+  isInvalidPassword = false
   greeting: string = ''
   idRequired: string = ''
   idShouldBeReal: string = ''
@@ -44,7 +46,7 @@ export class LoginComponent implements OnInit {
     {
       link: '',
       target: '_blank',
-      icon: 'google',  
+      icon: 'google',
       title: 'Google',
     },
     {
@@ -134,10 +136,10 @@ export class LoginComponent implements OnInit {
   }
 
   public isNotValidId(): boolean {
-    const isValid = environment.emailIdOnly ? !this.isNotValidEmail() : !this.isNotValidEmail() || !this.isNotValidMobile
-    if (isValid) {
-      this.auth.setStorage(Common.LOGIN_USER, this.user)
-    }
+    const isValid = environment.emailIdOnly ? !this.isNotValidEmail() : !this.isNotValidEmail() || !this.isNotValidMobile()
+    // if (isValid) {
+    //   this.auth.setStorage(Common.LOGIN_USER, this.user)
+    // }
     return !isValid
   }
 
@@ -159,6 +161,23 @@ export class LoginComponent implements OnInit {
   }
 
   login(): void {
+    if (this.isNotValidId()) {
+      this.isInvalidId = true
+    } else {
+      this.isInvalidId = false
+    }
+
+    if (this.isNotValidPassword()) {
+      this.isInvalidPassword = true
+    } else {
+      this.isInvalidPassword = false
+    }
+
+    if (this.isInvalidId || this.isInvalidPassword) {
+      return
+    }
+
+
     this.submitted = true
     this.auth.login(this.user).then((user: any) => {
       this.submitted = false
@@ -198,11 +217,11 @@ export class LoginComponent implements OnInit {
   //   return new Promise<SocialUser>((resolve, reject) => {
   //     let loginOptions = {};
   //     loginOptions['authTypes'] = [
-  //                                 AuthTypes.AuthTypeTalk, 
+  //                                 AuthTypes.AuthTypeTalk,
   //                                 AuthTypes.AuthTypeStory,
   //                                 AuthTypes.AuthTypeAccount
   //                               ];
-    
+
   //     this.kakao.login(loginOptions).then((res) => {
   //       const user: SocialUser = new SocialUser
   //       user.id = res.id
@@ -219,16 +238,16 @@ export class LoginComponent implements OnInit {
   snsLogin(sns: NbAuthSocialLink) {
     /*
     switch(sns.title.toLowerCase()) {
-      case 'google': 
+      case 'google':
         this.signInWithGoogle()
         break
-      case 'microsoft': 
+      case 'microsoft':
         this.signInWithMS()
         break
-      case 'amazon': 
+      case 'amazon':
         this.signInWithAWS()
         break
-      case 'facebook': 
+      case 'facebook':
         this.signInWithFB()
         break
       // case 'kakaotalk':

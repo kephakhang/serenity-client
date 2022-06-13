@@ -4,6 +4,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
+
 /* SystemJS module definition */
 declare var module: NodeModule;
 interface NodeModule {
@@ -12,4 +13,5 @@ interface NodeModule {
 
 declare var tinymce: any;
 
+// @ts-ignore
 declare var echarts: any;
