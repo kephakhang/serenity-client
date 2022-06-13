@@ -5,24 +5,10 @@
 
 
 
-<!--p>login works!</p-->
 <h1 id="title" class="title">Login</h1>
 
 <p class="sub-title">{{greeting}}</p>
 
-<!--nb-alert *ngIf="showMessages.error && errors?.length && !submitted" outline="danger" role="alert">
-  <p class="alert-title"><b>Oh snap!</b></p>
-  <ul class="alert-message-list">
-    <li *ngFor="let error of errors" class="alert-message">{{ error }}</li>
-  </ul>
-</nb-alert>
-
-<nb-alert *ngIf="showMessages.success && messages?.length && !submitted" outline="success" role="alert">
-  <p class="alert-title"><b>Hooray!</b></p>
-  <ul class="alert-message-list">
-    <li *ngFor="let message of messages" class="alert-message">{{ message }}</li>
-  </ul>
-</nb-alert-->
 
 <form aria-labelledby="title">
 
@@ -37,7 +23,8 @@
            fieldSize="large"
            autofocus
            [required]="true"
-           [attr.aria-invalid]="isNotValidId() ? true : null">
+           [attr.aria-invalid]="isNotValidId() ? true : null"
+           >
     <ng-container>
       <p class="caption status-danger" *ngIf="user.id.trim() === ''">
         {{idRequired}}
@@ -53,18 +40,27 @@
       <label class="label" for="input-password">Password:</label>
       <a class="forgot-password caption-2" routerLink="/auth/request-password">Forgot Password?</a>
     </span>
-    <input nbInput type="text"
-           fullWidth
-           [(ngModel)]="user.password"
-           name="password"
-           type="password"
-           id="input-password"
-           placeholder="Password"
-           fieldSize="large"
-           [required]="true"
-           [minlength]="password.min"
-           [maxlength]="password.max"
-           [attr.aria-invalid]="isNotValidPassword() ? true : null">
+        <!--nb-form-field-->
+          <input nbInput
+                fullWidth
+                [(ngModel)]="user.password"
+                name="password"
+                [type]="getInputType()"
+                id="input-password"
+                placeholder="Password"
+                fieldSize="large"
+                [required]="true"
+                [minlength]="password.min"
+                [maxlength]="password.max"
+                    [attr.aria-invalid]="isNotValidPassword() ? true : null"
+                >
+            <!--button nbSuffix nbButton ghost (click)="toggleShowPassword()">
+            <nb-icon [icon]="showPassword ? 'eye-outline' : 'eye-off-2-outline'"
+                      pack="eva"
+                      [attr.aria-label]="showPassword ? 'hide password' : 'show password'">
+            </nb-icon>
+          </button>
+        </nb-form-field-->
     <ng-container *ngIf="user.id.trim() !== ''">
       <p class="caption status-danger" *ngIf="user.password.trim() === ''">
         {{ auth.message.get('auth.passwordRequired') }}
@@ -75,9 +71,11 @@
     </ng-container>
   </div>
 
-  <div class="form-control-group accept-group">
+
+  <!--div class="form-control-group accept-group">
     <nb-checkbox name="rememberMe" [(ngModel)]="user.rememberMe" (click)="toggleRemeberMe()">Remember me</nb-checkbox>
-  </div>
+  </div-->
+
 
   <button nbButton
           fullWidth
@@ -88,7 +86,10 @@
           [class.btn-pulse]="submitted">
     Log In
   </button>
+
+
 </form>
+
 
 <section *ngIf="socialLogin && socialLinks && socialLinks.length > 0" class="links" aria-label="Social sign in">
   or enter with:
@@ -127,3 +128,4 @@
 <section class="another-action" aria-label="Register">
   {{ auth.message.get('auth.login.noAccount') }}<a class="text-link" routerLink="../register">Register</a>
 </section>
+

@@ -7,11 +7,13 @@ export const MENU_ITEMS: NbMenuItem[] = [
     link: '/pages/dashboard',
     home: true,
   },
+    /*
   {
     title: 'IoT Dashboard',
     icon: 'home-outline',
     link: '/pages/iot-dashboard',
   },
+
   {
     title: 'FEATURES',
     group: true,
@@ -198,6 +200,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
+  */
   {
     title: 'Tables & Data',
     icon: 'grid-outline',
@@ -212,6 +215,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
+  /*
   {
     title: 'Miscellaneous',
     icon: 'shuffle-2-outline',
@@ -222,6 +226,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
+  */
   {
     title: 'Auth',
     icon: 'lock-outline',

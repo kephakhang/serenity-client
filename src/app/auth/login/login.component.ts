@@ -95,13 +95,30 @@ export class LoginComponent implements OnInit {
     }
 
     this.auth.getUser().then(user => {
+      if (user) {
       this.auth.goHome()
+      } else {
+        this.auth.removeStorage(Common.LOGIN_USER)
+      }
     }, err => {
       this.auth.removeStorage(Common.LOGIN_USER)
       // this.auth.getStorage(Common.LOGIN_USER).then(user => {
       //   this.user = user
       // })
     })
+  }
+
+  showPassword = true;
+
+  getInputType() {
+    if (this.showPassword) {
+      return 'text';
+    }
+    return 'password';
+  }
+
+  toggleShowPassword() {
+    this.showPassword = !this.showPassword;
   }
 
   public isNotValidMobile(): boolean {
@@ -118,7 +135,7 @@ export class LoginComponent implements OnInit {
 
   public isNotValidId(): boolean {
     const isValid = environment.emailIdOnly ? !this.isNotValidEmail() : !this.isNotValidEmail() || !this.isNotValidMobile
-    if (isValid && this.user.rememberMe) {
+    if (isValid) {
       this.auth.setStorage(Common.LOGIN_USER, this.user)
     }
     return !isValid
@@ -127,16 +144,10 @@ export class LoginComponent implements OnInit {
   public isNotValidPassword(): boolean {
     if (!this.user.password) return true
     const isValid = this.auth.isValidPassword(this.user.password)
-    if (isValid && this.user.rememberMe) {
+    if (isValid) {
       this.auth.setStorage(Common.LOGIN_USER, this.user)
     }
     return !isValid
-  }
-
-  public toggleRemeberMe(): void {
-    if (this.user.rememberMe) {
-      this.auth.removeStorage(Common.LOGIN_USER)
-    }
   }
 
   public isNotReadyToSubmit(): boolean {

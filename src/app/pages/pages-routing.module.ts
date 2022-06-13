@@ -3,8 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { PagesComponent } from './pages.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { ECommerceComponent } from './e-commerce/e-commerce.component';
-import { NotFoundComponent } from './miscellaneous/not-found/not-found.component';
+import { NotFoundComponent } from './miscellaneous/not-found/not-found.component'
 
 const routes: Routes = [{
   path: '',
@@ -12,8 +11,9 @@ const routes: Routes = [{
   children: [
     {
       path: 'dashboard',
-      component: ECommerceComponent,
+      component: DashboardComponent,
     },
+    /*
     {
       path: 'iot-dashboard',
       component: DashboardComponent,
@@ -58,6 +58,7 @@ const routes: Routes = [{
       loadChildren: () => import('./editors/editors.module')
         .then(m => m.EditorsModule),
     },
+    */
     {
       path: 'tables',
       loadChildren: () => import('./tables/tables.module')

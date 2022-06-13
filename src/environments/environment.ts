@@ -11,10 +11,10 @@ import { Common } from '../app/providers/common/common'
 
 export const environment = {
   production: false,
-  apiHostUrl: 'http://localhost:8080',
+  apiHostUrl: 'http://localhost:8081',
   emailIdOnly: true,
   socialLogin: false,
-  defaultTheme: localStorage.getItem(Common.THEME) ? localStorage.getItem(Common.THEME) : 'material-light',
+  defaultTheme: 'material-light', //localStorage.getItem(Common.THEME) ? localStorage.getItem(Common.THEME) : 'material-light',
   password: {
     min: 7,
     max: 32

@@ -40,7 +40,9 @@ export class RegisterComponent implements OnInit {
       this.auth.goHome()
     }, err => {
       this.auth.getStorage(Common.REGISTER_USER).then(user => {
+        if (user) {
         this.user = user
+        }
       })
     })
   }

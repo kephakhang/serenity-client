@@ -9,6 +9,7 @@ import { RippleService } from '../../../@core/utils/ripple.service';
 import { AuthServiceProvider } from '../../../providers/auth-service/auth-service';
 import { en } from '../../../providers/message/i18n/en';
 import { environment } from '../../../../environments/environment';
+import { Common } from '../../../providers/common/common';
 
 @Component({
   selector: 'ngx-header',
@@ -73,7 +74,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.currentTheme = this.auth.theme.currentTheme;
+    
+    this.auth.getStorage(Common.THEME).then(value => {
+      if (value) {
+        this.changeTheme = value
+      }
+    })
 
     this.auth.getUser().then(user => {
       this.user = user

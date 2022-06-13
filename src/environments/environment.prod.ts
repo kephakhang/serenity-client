@@ -9,6 +9,14 @@ export const environment = {
   emailIdOnly: true,
   socialLogin: false,
   defaultTheme: 'material-light',
+  password: {
+    min: 7,
+    max: 32
+  },
+  name: {
+    min: 3,
+    max: 64
+  },
   sns : {
     facebook : {
       clientId: ''
