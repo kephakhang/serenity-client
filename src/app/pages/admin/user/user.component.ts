@@ -62,7 +62,7 @@ export class UserTableComponent {
 
   constructor(public auth: AuthServiceProvider, private service: SmartTableData) {
     const data = this.auth.get('/api/v1/user/list').then((list: any[]) => {
-      const data = list.map(item => new UserData(item.tenantId, item.name, item.detail.email, item.detail.mobile, item.level, new Date(item.regDatetime).toLocaleDateString(), new Date(item.modDatetime).toLocaleDateString()))
+      const data = list.map(item => new UserData(item.tenantId, item.name, item.detail.email, item.detail.mobile, item.level, new Date(item.regDatetime).toLocaleString(), new Date(item.modDatetime).toLocaleString()))
       this.source.load(data);
     }, err => {
       this.auth.showError(err)

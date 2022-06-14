@@ -29,7 +29,8 @@ export const routes: Routes = [
 ]
 
 const config: ExtraOptions = {
-  useHash: false,
+  useHash: true,
+  enableTracing: false,
   preloadingStrategy: PreloadAllModules
 }
 

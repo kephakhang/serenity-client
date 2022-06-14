@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
-import { LocalDataSource } from 'ng2-smart-table';
-
-import { SmartTableData } from '../../../@core/data/smart-table';
+import { Component } from '@angular/core'
+import { LocalDataSource } from 'ng2-smart-table'
+import { AuthServiceProvider } from '../../../providers/auth-service/auth-service'
+import { SmartTableData } from '../../../@core/data/smart-table'
+import { TenantData } from '../model/tenant-data'
 
 @Component({
   selector: 'ngx-tenant-table',
@@ -28,36 +29,60 @@ export class TenantTableComponent {
     columns: {
       id: {
         title: 'ID',
+        type: 'string',
+      },
+      name: {
+        title: 'Name',
+        type: 'string',
+      },
+      type: {
+        title: 'Type',
         type: 'number',
       },
-      firstName: {
-        title: 'First Name',
+      description: {
+        title: 'Description',
         type: 'string',
       },
-      lastName: {
-        title: 'Last Name',
+      countryId: {
+        title: 'Country',
         type: 'string',
       },
-      username: {
-        title: 'Username',
+      hostUrl: {
+        title: 'Host Url',
         type: 'string',
       },
-      email: {
-        title: 'E-mail',
+      prefix: {
+        title: 'Prefix',
         type: 'string',
       },
-      age: {
-        title: 'Age',
-        type: 'number',
+      hostname: {
+        title: 'Hostname',
+        type: 'string',
+      },
+      // enable: {
+      //   title: 'enable',
+      //   type: 'boolean',
+      // },
+      regDatetime: {
+        title: 'Registered',
+        type: 'string',
+      },
+      modDatetime: {
+        title: 'Updated',
+        type: 'string',
       },
     },
   };
 
   source: LocalDataSource = new LocalDataSource();
 
-  constructor(private service: SmartTableData) {
-    const data = this.service.getData();
-    this.source.load(data);
+  constructor(public auth: AuthServiceProvider, private service: SmartTableData) {
+    const data = this.auth.get('/api/v1/tenant/list').then((list: any[]) => {
+      const data = list.map(item => new TenantData(item.id, item.name, item.type, item.description, item.countryId, item.hostUrl, item.prefix, item.hostname, new Date(item.regDatetime).toLocaleString(), new Date(item.modDatetime).toLocaleString()))
+      this.source.load(data);
+    }, err => {
+      this.auth.showError(err)
+    })
   }
 
   onDeleteConfirm(event): void {

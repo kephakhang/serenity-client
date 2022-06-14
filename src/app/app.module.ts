@@ -18,6 +18,7 @@ import { Message } from './providers/message/message';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { AuthServiceProvider  } from './providers/auth-service/auth-service';
 import { AppleSigninModule } from 'ngx-apple-signin';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { environment } from '../environments/environment';
 import {
   SocialLoginModule,
@@ -71,6 +72,7 @@ import {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: LOCALE_ID, useValue: 'en-US' },
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
     // {
     //   provide: 'SocialAuthServiceConfig',
     //   useValue: {
