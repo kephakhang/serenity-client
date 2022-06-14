@@ -597,8 +597,9 @@ export class AuthServiceProvider {
   public getUser(): Promise<any> {
 
       return new Promise((resolve, reject) => {
-        this.user = this.getStorage(Common.USER).then(user => {
-          if (this.user && this.user.jwt) {
+        this.getStorage(Common.USER).then(user => {
+          if (user && user.jwt) {
+            this.user = user
             this.get('/api/v1/user').then(user => {
               if (user) {
                 this.setStorage(Common.USER, user)

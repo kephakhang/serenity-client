@@ -21,6 +21,17 @@
 
   nb-user {
     cursor: pointer;
+    .user-name {
+      color: var(--background-basic-color) !important;
+    }
+  }
+
+  nb-select {
+    color: var(--background-basic-color) !important;
+
+    // .appearance-outline.status-primary .select-button {
+    //   color: var(--background-basic-color) !important
+    // }
   }
 
   ::ng-deep nb-search button {
@@ -65,6 +76,11 @@
   @include media-breakpoint-down(is) {
     nb-select {
       display: none;
+      color: var(--background-basic-color);
+
+      .appearance-outline.status-primary .select-button {
+        color: var(--background-basic-color) !important
+      }
     }
   }
 }

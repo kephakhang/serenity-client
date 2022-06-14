@@ -13,6 +13,11 @@ const routes: Routes = [{
       path: 'dashboard',
       component: DashboardComponent,
     },
+    {
+      path: 'admin',
+      loadChildren: () => import('./admin/admin.module')
+        .then(m => m.AdminModule),
+    },
     /*
     {
       path: 'iot-dashboard',

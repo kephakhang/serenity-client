@@ -37,8 +37,7 @@ export class LoginComponent implements OnInit {
   messages: string[]
   user: LoginData = new LoginData(
     '',
-    '',
-    false
+    ''
   )
   submitted: boolean = false
   socialLogin: boolean = environment.socialLogin

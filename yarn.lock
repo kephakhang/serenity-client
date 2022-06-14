@@ -8456,6 +8456,11 @@ is-wsl@^2.2.0:
   dependencies:
     is-docker "^2.0.0"
 
+isarray@0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/isarray/-/isarray-0.0.1.tgz#8a18acfca9a8f4177e09abfc6038939b05d1eedf"
+  integrity sha512-D2S+3GLxWH+uhrNEcoh/fnmYeP8E8/zHl644d/jdA0g2uyXvy3sb0qxotE+ne0LtccHknQzWwZEzhak7oJ0COQ==
+
 isarray@1.0.0, isarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
@@ -10511,6 +10516,13 @@ pacote@12.0.3:
     ssri "^8.0.1"
     tar "^6.1.0"
 
+page@1.11.6:
+  version "1.11.6"
+  resolved "https://registry.yarnpkg.com/page/-/page-1.11.6.tgz#5ef4efc7073749b8085ccdaa0dcd7c9e0de12fe3"
+  integrity sha512-P6e2JfzkBrPeFCIPplLP7vDDiU84RUUZMrWdsH4ZBGJ8OosnwFkcUkBHp1DTIjuipLliw9yQn/ZJsXZvarsO+g==
+  dependencies:
+    path-to-regexp "~1.2.1"
+
 pako@^1.0.3, pako@~1.0.2:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
@@ -10712,6 +10724,13 @@ path-to-regexp@0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.1.7.tgz#df604178005f522f15eb4490e7247a1bfaa67f8c"
   integrity sha512-5DFkuoqlv1uYQKxy8omFBeJPQcdoE07Kv2sferDCrAq1ohOU+MSDswDIbnx3YAM60qIOnYa53wBhXW0EbMonrQ==
+
+path-to-regexp@~1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-1.2.1.tgz#b33705c140234d873c8721c7b9fd8b541ed3aff9"
+  integrity sha512-DBw9IhWfevR2zCVwEZURTuQNseCvu/Q9f5ZgqMCK0Rh61bDa4uyjPAOy9b55yKiPT59zZn+7uYKxmWwsguInwg==
+  dependencies:
+    isarray "0.0.1"
 
 path-type@^1.0.0:
   version "1.1.0"
