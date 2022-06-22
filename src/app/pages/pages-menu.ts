@@ -21,6 +21,27 @@ export const MENU_ITEMS: NbMenuItem[] = [
         icon: 'globe-outline',
         link: '/pages/admin/tenants',
       },
+      {
+        title: 'Terminals',
+        icon: 'tv-outline',
+        link: '/pages/admin/terminals',
+      },
+      {
+        title: 'Counter',
+        icon: 'battery-outline',
+        link: '/pages/admin/counters',
+      },
+    ],
+  },
+  {
+    title: 'Factory',
+    icon: 'archive-outline',
+    children: [
+      {
+        title: 'Counter',
+        icon: 'battery-outline',
+        link: '/pages/factory/counters',
+      },
     ],
   },
     /*
@@ -216,7 +237,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
-  */
+
   {
     title: 'Tables & Data',
     icon: 'grid-outline',
@@ -231,7 +252,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
-  /*
   {
     title: 'Miscellaneous',
     icon: 'shuffle-2-outline',
@@ -242,7 +262,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
-  */
   {
     title: 'Auth',
     icon: 'lock-outline',
@@ -265,4 +284,5 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
+  */
 ];

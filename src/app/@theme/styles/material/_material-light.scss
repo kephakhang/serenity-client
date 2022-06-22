@@ -451,10 +451,13 @@ $theme: (
   select-outline-basic-focus-background-color: transparent,
   select-outline-basic-hover-background-color: transparent,
   select-outline-basic-disabled-background-color: transparent,
+
   select-outline-primary-background-color: select-outline-basic-background-color,
   select-outline-primary-focus-background-color: select-outline-basic-focus-background-color,
   select-outline-primary-hover-background-color: select-outline-basic-hover-background-color,
   select-outline-primary-disabled-background-color: select-outline-basic-disabled-background-color,
+  select-outline-primary-text-color: color-basic-100,
+
   select-outline-success-background-color: select-outline-basic-background-color,
   select-outline-success-focus-background-color: select-outline-basic-focus-background-color,
   select-outline-success-hover-background-color: select-outline-basic-hover-background-color,

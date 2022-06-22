@@ -76,7 +76,6 @@
     "moment": "^2.29.3",
     "nebular-icons": "1.1.0",
     "ng2-completer": "^9.0.1",
-    "ng2-smart-table": "^1.7.2",
     "ngx-apple-signin": "^10.0.2",
     "ngx-echarts": "^8.0.1",
     "node-sass": "7.0.1",

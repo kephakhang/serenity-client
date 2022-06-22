@@ -1,8 +1,9 @@
-import { Component } from '@angular/core'
-import { LocalDataSource } from 'ng2-smart-table'
+import { Component, Output, EventEmitter } from '@angular/core'
+import { LocalDataSource } from '../../../../components/smart-table/public-api'
 import { AuthServiceProvider } from '../../../providers/auth-service/auth-service'
 import { SmartTableData } from '../../../@core/data/smart-table'
-import { UserData } from '../model/user-data'
+import { UserData } from '../../model/user-data'
+import { SelectComponent } from '../../../@theme/components/select/select.component'
 
 @Component({
   selector: 'ngx-user-table',
@@ -10,6 +11,13 @@ import { UserData } from '../model/user-data'
   styleUrls: ['./user.component.scss'],
 })
 export class UserTableComponent {
+  levelMap: Map<Number, String> = new Map([
+    [1, "Guest"], 
+    [10, "Factory Admin"], 
+    [100, "eMoldino Admin"], 
+    [1000, "Super Admin"]
+  ])
+  userList: UserData[]
 
   settings = {
     add: {
@@ -38,22 +46,40 @@ export class UserTableComponent {
       email: {
         title: 'E-mail',
         type: 'string',
+        editable: false
       },
       mobile: {
         title: 'Mobile',
         type: 'string',
+        editable: false
       },
       level: {
         title: 'Level',
         type: 'number',
+        valuePrepareFunction: (value) => {
+          return this.levelMap.get(value)
+        },
+        editor: {
+          type: 'list',
+          config: {
+            list: [ //0: Guest, 10:Factory Admin, 100: eMoldino Admin, 1000:Super admin',
+              {value: 0, title: 'Guest'},
+              {value: 10, title: 'Factory Admin'},
+              {value: 100, title: 'eMoldino Admin'},
+              {value: 1000, title: 'Super Admin'},
+            ]
+          }
+        }
       },
       regDatetime: {
         title: 'Registered',
-        type: 'string'
+        type: 'string',
+        editable: false
       },
       modDatetime: {
         title: 'Updated',
-        type: 'string'
+        type: 'string',
+        editable: false
       }
     },
   };
@@ -61,13 +87,17 @@ export class UserTableComponent {
   source: LocalDataSource = new LocalDataSource();
 
   constructor(public auth: AuthServiceProvider, private service: SmartTableData) {
-    const data = this.auth.get('/api/v1/user/list').then((list: any[]) => {
-      const data = list.map(item => new UserData(item.tenantId, item.name, item.detail.email, item.detail.mobile, item.level, new Date(item.regDatetime).toLocaleString(), new Date(item.modDatetime).toLocaleString()))
-      this.source.load(data);
+    this.auth.getSession().then(user => {
+      this.auth.get('/api/v1/user/list').then((list: any[]) => {
+        const userList = list.map(item => new UserData(item.id, item.tenantId, item.name, item.detail.email, item.detail.mobile, item.level, new Date(item.regDatetime).toLocaleString(), new Date(item.modDatetime).toLocaleString()))
+        this.source.load(userList);
+      }, err => {
+        this.auth.showError(err)
+      })
     }, err => {
       this.auth.showError(err)
     })
-   
+    
   }
 
   onDeleteConfirm(event): void {

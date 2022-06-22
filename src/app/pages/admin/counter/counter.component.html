@@ -1,0 +1,17 @@
+<nb-card>
+  <nb-card-header>
+  Counters
+  </nb-card-header>
+
+  
+  <nb-card-body>
+    <nb-tabset>
+      <ng-container *ngFor="let tenant of tenantList">
+        <nb-tab tabTitle="{{tenant.description}}">
+          <ng2-smart-table [settings]="settings" [source]="source" (deleteConfirm)="onDeleteConfirm($event)">
+          </ng2-smart-table>
+        </nb-tab>
+      </ng-container>
+    </nb-tabset>
+  </nb-card-body>
+</nb-card>

@@ -16,7 +16,9 @@ import { rejects } from 'assert'
   See https://angular.io/guide/dependency-injection for more info on providers
   and Angular DI.
 */
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthServiceProvider {
   public apiHostUrl = environment.apiHostUrl
   public lang = 'en'
@@ -32,8 +34,18 @@ export class AuthServiceProvider {
   public baseHref: string = "/"
   public title: string = ''
   public user: any = null
-  storage: Storage | null = null
+  private storage: Storage | null = null;
   fileChooser: any
+  private sessionNotFound: string = "eMoldino ::: Session Not Found !!!"
+  private userNotFound: string = "eMoldino ::: User Not Found !!!"
+
+  async init() {
+    // If using, define drivers here: await this.storage.defineDriver(/*...*/);
+    //this._storage.defineDriver()
+    const storage = await this._storage.create();
+    this.storage = storage;
+    
+  }
 
   constructor(
     public router: Router,
@@ -48,55 +60,56 @@ export class AuthServiceProvider {
     public _storage: Storage,
     public activateRoute: ActivatedRoute) {
 
-    this.platform.ready()
-      .then(async (data) => {
+      this.init()
 
-        const storage = await this._storage.create();
-        this.storage = storage;
+      this.platform.ready()
+        .then(async (data) => {
 
-        this.getStorage(Common.USER).then(user => {
-          if (user && user.jwt) {
-            this.user = user
-          } else {
-            this.user = null
-          }
-        }, err => {
-          this.user = null
-        })
+          
+
+          // this.getStorage(Common.USER).then(user => {
+          //   if (user && user.jwt) {
+          //     this.user = user
+          //   } else {
+          //     this.user = null
+          //   }
+          // }, err => {
+          //   this.user = null
+          // })
 
 
-        this.root = ""
-        this.baseHref = "./"
-        this.package = 'com.emoldino.serenity'
-        this.version = '1.0.0'
+          this.root = ""
+          this.baseHref = "./"
+          this.package = 'com.emoldino.serenity'
+          this.version = '1.0.0'
 
-        let lang = this.getUsersLocale('en_US').split('_')[0]
-        this.getStorage(Common.LANG).then(value => {
-          if (value) {
-            lang = value
-          }
+          let lang = this.getUsersLocale('en_US').split('_')[0]
+          this.getStorage(Common.LANG).then(value => {
+            if (value) {
+              lang = value
+            }
 
-          if (!this.message.langMapArr[lang]) {
+            if (!this.message.langMapArr[lang]) {
+              this.lang = 'en'
+            } else {
+              this.lang = lang
+              this.setStorage(Common.LANG, this.lang)
+            }
+          }, err => {
             this.lang = 'en'
-          } else {
-            this.lang = lang
-            this.setStorage(Common.LANG, this.lang)
-          }
-        }, err => {
-          this.lang = 'en'
+          })
+
+
+          let themeVal: string = environment.defaultTheme
+          this.changeTheme(themeVal)
+
+          this.okStr = this.message.get('global.ok')
+          this.errorStr = this.message.get('global.error')
+          this.confirmStr = this.message.get('global.confirm')
+          this.cancelStr = this.message.get('global.cancel')
+          this.closeStr = this.message.get('global.close')
+          this.notificationStr = this.message.get('global.notification')
         })
-
-
-        let themeVal: string = environment.defaultTheme
-        this.changeTheme(themeVal)
-
-        this.okStr = this.message.get('global.ok')
-        this.errorStr = this.message.get('global.error')
-        this.confirmStr = this.message.get('global.confirm')
-        this.cancelStr = this.message.get('global.cancel')
-        this.closeStr = this.message.get('global.close')
-        this.notificationStr = this.message.get('global.notification')
-      })
   }
 
   public setLang(newLang): Promise<any> {
@@ -169,7 +182,7 @@ export class AuthServiceProvider {
   }
 
   public goHome() {
-    this.router.navigate(['/dashboard'])
+    this.router.navigateByUrl('/pages/dashboard')
   }
 
   public async showError(err: any) {
@@ -179,21 +192,27 @@ export class AuthServiceProvider {
         if (err.error.body.message && err.error.body.message[this.lang]) {
           this.presentAlert(err.error.body.message[this.lang])
         } else if (err.error.body.description) {
-          this.presentAlert(err.error.body.description)
+          this.presentAlert(err.error.body.description, true)
         } else {
-          this.presentAlert(JSON.stringify(err.error.body))
+          this.presentAlert(JSON.stringify(err.error.body), true)
         }
-      } else if(err instanceof String) {
+      } else if(typeof err === 'string') {
         this.presentAlert(err as string)
+        if ((err as string) === this.sessionNotFound) {
+          this.logout();
+        }
       } else {
-        this.presentAlert(JSON.stringify(err))
-      }
-
-      if (err.status !== undefined && err.status === 400) {
-        this.router.navigate(['/auth/login'])
+        if (err.status && err.message) {
+          this.presentAlert(err.message, true)
+          if (err.status === 401) {
+            this.logout()
+          }
+        } else {
+          this.presentAlert(JSON.stringify(err), true)
+        }
       }
     } catch (e) {
-      this.presentAlert(JSON.stringify(e))
+      this.presentAlert(JSON.stringify(e), true)
     }
   }
 
@@ -235,20 +254,29 @@ export class AuthServiceProvider {
     return await alert.present()
   }
 
-  public async presentAlert(message: string) {
+  public async presentAlert(message: string, error?: boolean) {
 
 
     // const alertController = document.querySelector('ion-alert-controller')
     // await alertController.componentOnReady()
-
-    const alert = await this.alertCtrl.create({
-      header: this.notificationStr,
-      subHeader: '',
-      message: message,
-      buttons: [this.okStr] // this.auth.message.get('general', 'close')]
-    })
-
-    return await alert.present()
+ 
+    if (error) {
+      const alert = await this.alertCtrl.create({
+        header: this.errorStr,
+        subHeader: '',
+        message: message,
+        buttons: [this.okStr] // this.auth.message.get('general', 'close')]
+      })
+      return await alert.present()
+    } else {
+      const alert = await this.alertCtrl.create({
+        header: this.notificationStr,
+        subHeader: '',
+        message: message,
+        buttons: [this.okStr] // this.auth.message.get('general', 'close')]
+      })
+      return await alert.present()
+    } 
   }
 
   public async promptAlert(nick): Promise<string> {
@@ -303,15 +331,34 @@ export class AuthServiceProvider {
   }
 
   public setStorage(key: string, value: any): Promise<any> {
-    return this.storage.set(key, value)
+    try {
+      return this.storage.set(key, value)
+    } catch(ex) {
+      return new Promise((resolve, reject) => {
+        reject("setStorage() : TypeError: Cannot read properties of null (reading 'set')")
+      })
+    }
   }
 
   public getStorage(key: string): Promise<any> {
-    return this.storage.get(key)
+    try {
+      return this.storage.get(key)
+    } catch(ex) {
+      return new Promise((resolve, reject) => {
+        reject("getStorage() : TypeError: Cannot read properties of null (reading 'get')")
+      })
+    }
   }
 
   public removeStorage(key: string): Promise<any> {
-    return this.storage.remove(key)
+    try {
+      return this.storage.remove(key)
+    } catch(ex) {
+      return new Promise((resolve, reject) => {
+        reject("removeStorage() : TypeError: Cannot read properties of null (reading 'remove')")
+    
+      })
+    }
   }
 
   //common/http ================================================== [
@@ -575,12 +622,16 @@ export class AuthServiceProvider {
   }
 
   public logout() {
-    this.removeStorage(Common.USER)
-    this.removeStorage(Common.PARAMS)
-    this.removeStorage(Common.VIDEO)
-    this.removeStorage(Common.STAT_PARAMS)
+    try {
+      this.removeStorage(Common.USER)
+      this.removeStorage(Common.PARAMS)
+      this.removeStorage(Common.VIDEO)
+      this.removeStorage(Common.STAT_PARAMS)
+    } catch(ex) {
+      console.log('logout...')
+    }
     this.user = null
-    this.router.navigate(['/auth/login'])
+    this.router.navigateByUrl('/auth/login')
   }
 
   public isEmpty(value: string): boolean {
@@ -594,7 +645,28 @@ export class AuthServiceProvider {
   /**
    * 사용자 정보를 Promise<user> 형식으로 스토리지에서 가져오는 함수
    */
-  public getUser(): Promise<any> {
+  public getSession(): Promise<any> {
+
+      return new Promise((resolve, reject) => {
+        this.getStorage(Common.USER).then(user => {
+          if (user && user.jwt) {
+            this.user = user
+              resolve(user)
+          } else {
+            this.removeStorage(Common.USER)
+            reject(this.sessionNotFound)
+          }
+        }, err => {
+          console.log(JSON.stringify(err))
+          reject(this.sessionNotFound)
+        })
+      })
+  }
+
+    /**
+   * 사용자 정보를 jwt 으로 갱신하는 함수
+   */
+     public getUser(): Promise<any> {
 
       return new Promise((resolve, reject) => {
         this.getStorage(Common.USER).then(user => {
@@ -606,20 +678,20 @@ export class AuthServiceProvider {
                 resolve(this.user)
               } else {
                 this.removeStorage(Common.USER)
-                reject('User not found !!!')
+                reject(this.userNotFound)
               }
             }, err => {
               this.removeStorage(Common.USER)
-              reject('User not found !!!')
+              reject(this.userNotFound)
             })
 
           } else {
             this.removeStorage(Common.USER)
-            reject('User not found !!!')
+            reject(this.userNotFound)
           }
         }, err => {
           console.log(JSON.stringify(err))
-          reject('User not found !!!')
+          reject(this.userNotFound)
         })
       })
   }
@@ -641,9 +713,9 @@ export class AuthServiceProvider {
     if (data === undefined || data == null) {
       this.removeStorage(Common.NAVIGATION_EXTRA).then(res => {
         switch (direction) {
-          case 'root': this.router.navigate([uri])
+          case 'root': this.router.navigateByUrl(uri)
             break
-          case 'forward': this.router.navigate([uri])
+          case 'forward': this.router.navigateByUrl(uri)
             break
           case 'back': this.location.back()
             break
@@ -654,9 +726,9 @@ export class AuthServiceProvider {
       this.setStorage(Common.NAVIGATION_EXTRA, data)
         .then(extraData => {
           switch (direction) {
-            case 'root': this.router.navigate([uri])
+            case 'root': this.router.navigateByUrl(uri)
               break
-            case 'forward': this.router.navigate([uri])
+            case 'forward': this.router.navigateByUrl(uri)
               break
             case 'back': this.location.back()
               break

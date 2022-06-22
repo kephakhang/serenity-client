@@ -278,6 +278,7 @@ $theme: (
   background-basic-color-3: color-basic-900,
   background-basic-color-4: color-basic-1100,
 
+
   background-alternative-color-1: color-basic-100,
   background-alternative-color-2: color-basic-200,
   background-alternative-color-3: color-basic-300,
@@ -325,7 +326,6 @@ $theme: (
   border-danger-color-4: color-danger-800,
   border-danger-color-5: color-danger-900,
 
-  text-basic-color: color-basic-100,
   text-alternate-color: color-basic-900,
   text-control-color: color-basic-100,
   text-disabled-color: color-basic-transparent-600,
@@ -479,6 +479,9 @@ $theme: (
   select-outline-control-focus-background-color: select-outline-basic-focus-background-color,
   select-outline-control-hover-background-color: select-outline-basic-hover-background-color,
   select-outline-control-disabled-background-color: select-outline-basic-disabled-background-color,
+
+  smart-table-fg2: color-basic-700,
+
   option-list-shadow: shadow,
   option-list-border-style: none,
   option-list-adjacent-border-style: none,
@@ -497,5 +500,17 @@ $theme: (
   option-large-text-font-weight: material-regular-font-weight,
   option-giant-text-font-weight: material-regular-font-weight
 );
+
+input-editor.ng-star-inserted {
+  color: var(--smart-table-fg2)
+}
+
+select-editor.ng-star-inserted {
+  color: var(--smart-table-fg2);
+}
+
+echekbox-editor.ng-star-inserted {
+  color: var(--smart-table-fg2)
+}
 
 $nb-themes: nb-register-theme($theme, material-dark, dark);

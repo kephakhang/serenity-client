@@ -11,12 +11,18 @@ const routes: Routes = [{
   children: [
     {
       path: 'dashboard',
-      component: DashboardComponent,
+      loadChildren: () => import('./dashboard/dashboard.module')
+        .then(m => m.DashboardModule),
     },
     {
       path: 'admin',
       loadChildren: () => import('./admin/admin.module')
         .then(m => m.AdminModule),
+    },
+    {
+      path: 'factory',
+      loadChildren: () => import('./factory/factory.module')
+        .then(m => m.FactoryModule),
     },
     /*
     {
@@ -63,12 +69,12 @@ const routes: Routes = [{
       loadChildren: () => import('./editors/editors.module')
         .then(m => m.EditorsModule),
     },
-    */
     {
       path: 'tables',
       loadChildren: () => import('./tables/tables.module')
         .then(m => m.TablesModule),
     },
+    */
     {
       path: 'miscellaneous',
       loadChildren: () => import('./miscellaneous/miscellaneous.module')

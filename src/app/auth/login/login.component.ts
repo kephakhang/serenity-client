@@ -96,16 +96,9 @@ export class LoginComponent implements OnInit {
     }
 
     this.auth.getUser().then(user => {
-      if (user) {
-      this.auth.goHome()
-      } else {
-        this.auth.removeStorage(Common.LOGIN_USER)
-      }
-    }, err => {
-      this.auth.removeStorage(Common.LOGIN_USER)
-      // this.auth.getStorage(Common.LOGIN_USER).then(user => {
-      //   this.user = user
-      // })
+      this.auth.setStorage(Common.USER, user).then(u => {
+        this.auth.goHome()
+      }) 
     })
   }
 
@@ -181,8 +174,10 @@ export class LoginComponent implements OnInit {
     this.auth.login(this.user).then((user: any) => {
       this.submitted = false
       if (user) {
-        this.auth.setStorage(Common.USER, user)
-        this.auth.goHome()
+        this.auth.setStorage(Common.USER, user).then(value => {
+          this.auth.goHome()
+        })
+        
       } else {
         this.auth.showError('auth.login.unknownError')
         this.submitted = false

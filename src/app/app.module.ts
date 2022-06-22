@@ -36,7 +36,8 @@ import {
   NbToastrModule,
   NbWindowModule,
   NbInputModule,
-  NbFormFieldModule
+  NbFormFieldModule,
+  NbTabsetModule
 } from '@nebular/theme';
 
 @NgModule({
@@ -53,6 +54,7 @@ import {
     HttpClientModule,
     AppRoutingModule,
     NbInputModule,
+    NbTabsetModule,
     NbSidebarModule.forRoot(),
     NbMenuModule.forRoot(),
     NbDatepickerModule.forRoot(),

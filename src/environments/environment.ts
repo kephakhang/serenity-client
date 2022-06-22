@@ -14,7 +14,7 @@ export const environment = {
   apiHostUrl: 'http://localhost:8081',
   emailIdOnly: true,
   socialLogin: false,
-  defaultTheme: 'material-light',
+  defaultTheme: 'material-dark',
   password: {
     min: 7,
     max: 32

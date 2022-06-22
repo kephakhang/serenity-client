@@ -4,6 +4,8 @@ import { Routes, RouterModule } from '@angular/router';
 import { AdminComponent } from './admin.component';
 import { UserTableComponent } from './user/user.component';
 import { TenantTableComponent } from './tenant/tenant.component';
+import { TerminalTableComponent } from './terminal/terminal.component';
+import { CounterTableComponent } from './counter/counter.component';
 
 const routes: Routes = [{
   path: '',
@@ -16,6 +18,14 @@ const routes: Routes = [{
     {
       path: 'tenants',
       component: TenantTableComponent,
+    },
+    {
+      path: 'terminals',
+      component: TerminalTableComponent,
+    },
+    {
+      path: 'counters',
+      component: CounterTableComponent,
     },
   ],
 }];
@@ -30,4 +40,6 @@ export const routedComponents = [
   AdminComponent,
   UserTableComponent,
   TenantTableComponent,
+  TerminalTableComponent,
+  CounterTableComponent
 ];

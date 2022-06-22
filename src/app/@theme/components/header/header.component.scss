@@ -22,12 +22,12 @@
   nb-user {
     cursor: pointer;
     .user-name {
-      color: var(--background-basic-color) !important;
+      color: var(--select-outline-primary-text-color) !important;
     }
   }
 
   nb-select {
-    color: var(--background-basic-color) !important;
+    color: var(--select-outline-primary-text-color) !important;
 
     // .appearance-outline.status-primary .select-button {
     //   color: var(--background-basic-color) !important

@@ -41,7 +41,9 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {
     this.auth.getUser().then(user => {
-      this.auth.goHome()
+      this.auth.setStorage(Common.USER, user).then(u => {
+        this.auth.goHome()
+      }) 
     }, err => {
       this.auth.getStorage(Common.REGISTER_USER).then(user => {
         if (user) {

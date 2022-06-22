@@ -1,7 +1,8 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, Output, EventEmitter} from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 import { takeWhile } from 'rxjs/operators' ;
 import { SolarData } from '../../@core/data/solar';
+import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
 
 interface CardSettings {
   title: string;
@@ -15,6 +16,7 @@ interface CardSettings {
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnDestroy {
+  @Output() session: EventEmitter<any> = new EventEmitter();
 
   private alive = true;
 
@@ -82,19 +84,25 @@ export class DashboardComponent implements OnDestroy {
     'material-light': this.commonStatusCardsSet,
   };
 
-  constructor(private themeService: NbThemeService,
+  constructor(public auth: AuthServiceProvider, private themeService: NbThemeService,
               private solarService: SolarData) {
-    this.themeService.getJsTheme()
-      .pipe(takeWhile(() => this.alive))
-      .subscribe(theme => {
-        this.statusCards = this.statusCardsByThemes[theme.name];
-    });
-
-    this.solarService.getSolarData()
-      .pipe(takeWhile(() => this.alive))
-      .subscribe((data) => {
-        this.solarValue = data;
+    this.auth.getUser().then(user => {
+      this.themeService.getJsTheme()
+        .pipe(takeWhile(() => this.alive))
+        .subscribe(theme => {
+          this.statusCards = this.statusCardsByThemes[theme.name];
       });
+
+      this.solarService.getSolarData()
+        .pipe(takeWhile(() => this.alive))
+        .subscribe((data) => {
+          this.solarValue = data;
+        });
+    }, err => {
+      this.auth.showError(err)
+      this.auth.logout()
+    })
+    
   }
 
   ngOnDestroy() {

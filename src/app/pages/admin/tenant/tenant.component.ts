@@ -1,8 +1,8 @@
-import { Component } from '@angular/core'
-import { LocalDataSource } from 'ng2-smart-table'
+import { Component, Output, EventEmitter } from '@angular/core'
+import { LocalDataSource } from '../../../../components/smart-table/public-api'
 import { AuthServiceProvider } from '../../../providers/auth-service/auth-service'
 import { SmartTableData } from '../../../@core/data/smart-table'
-import { TenantData } from '../model/tenant-data'
+import { TenantData } from '../../model/tenant-data'
 
 @Component({
   selector: 'ngx-tenant-table',
@@ -10,6 +10,8 @@ import { TenantData } from '../model/tenant-data'
   styleUrls: ['./tenant.component.scss'],
 })
 export class TenantTableComponent {
+
+  tenantList: TenantData[]
 
   settings = {
     add: {
@@ -28,7 +30,7 @@ export class TenantTableComponent {
     },
     columns: {
       id: {
-        title: 'ID',
+        title: 'Id',
         type: 'string',
       },
       name: {
@@ -66,10 +68,12 @@ export class TenantTableComponent {
       regDatetime: {
         title: 'Registered',
         type: 'string',
+        editable: false
       },
       modDatetime: {
         title: 'Updated',
         type: 'string',
+        editable: false
       },
     },
   };
@@ -77,12 +81,17 @@ export class TenantTableComponent {
   source: LocalDataSource = new LocalDataSource();
 
   constructor(public auth: AuthServiceProvider, private service: SmartTableData) {
-    const data = this.auth.get('/api/v1/tenant/list').then((list: any[]) => {
-      const data = list.map(item => new TenantData(item.id, item.name, item.type, item.description, item.countryId, item.hostUrl, item.prefix, item.hostname, new Date(item.regDatetime).toLocaleString(), new Date(item.modDatetime).toLocaleString()))
-      this.source.load(data);
+    this.auth.getSession().then(user => {
+      this.auth.get('/api/v1/tenant/list').then((list: any[]) => {
+        this.tenantList = list.map(item => new TenantData(item.id, item.name, item.type, item.description, item.countryId, item.hostUrl, item.prefix, item.hostname, new Date(item.regDatetime).toLocaleString(), new Date(item.modDatetime).toLocaleString()))
+        this.source.load(this.tenantList);
+      }, err => {
+        this.auth.showError(err)
+      })
     }, err => {
       this.auth.showError(err)
     })
+    
   }
 
   onDeleteConfirm(event): void {

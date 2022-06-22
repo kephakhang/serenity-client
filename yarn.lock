@@ -9915,14 +9915,6 @@ ng2-completer@^9.0.1:
   resolved "https://registry.yarnpkg.com/ng2-completer/-/ng2-completer-9.0.1.tgz#5ba97fd978bfcef746f5ed71d965f65d280de4de"
   integrity sha512-zEKehHdCK8E/k4Y0HepprGdYBHr2AOsaq4QpeqoCyUElOOC5M3qi3ZEHV1VF54I7heBQktswwXe5UyWduJ0Xeg==
 
-ng2-smart-table@^1.7.2:
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/ng2-smart-table/-/ng2-smart-table-1.7.2.tgz#227efacc243c6d0ba0281281c0841282a604d201"
-  integrity sha512-TwREaaTtgaPyxxocoxH4W4BQEpiuYhOhPxDOgR/+O36i7m61c0O+OWx2u7wSHU9UabdQDWwgWU6Eus2tOT3RJA==
-  dependencies:
-    lodash "^4.17.10"
-    tslib "^2.0.0"
-
 ngx-apple-signin@^10.0.2:
   version "10.0.2"
   resolved "https://registry.yarnpkg.com/ngx-apple-signin/-/ngx-apple-signin-10.0.2.tgz#b39bdbb77e1be18604a43863b9bf656be8d81905"

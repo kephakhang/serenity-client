@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, EventEmitter, Output } from '@angular/core';
 import { NbMediaBreakpointsService, NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 
 import { UserData } from '../../../@core/data/users';
@@ -10,6 +10,7 @@ import { AuthServiceProvider } from '../../../providers/auth-service/auth-servic
 import { en } from '../../../providers/message/i18n/en';
 import { environment } from '../../../../environments/environment';
 import { Common } from '../../../providers/common/common';
+import { emit } from 'process';
 
 @Component({
   selector: 'ngx-header',
@@ -21,8 +22,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
   public readonly materialTheme$: Observable<boolean>;
   userPictureOnly: boolean = false;
-  user: any;
-
+  user: any = null
+ 
   themes = [
     /*
     {
@@ -55,13 +56,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   currentTheme = environment.defaultTheme;
 
-  userMenu = [ { title: 'Profile' }, { title: 'Log out' } ];
+  userMenu = [ { title: 'Profile' }, { title: 'Logout', link: '/auth/logout' } ];
 
   public constructor(
     public auth: AuthServiceProvider,
     private sidebarService: NbSidebarService,
     private menuService: NbMenuService,
-    // private userService: UserData,
     private layoutService: LayoutService,
     private breakpointService: NbMediaBreakpointsService,
     private rippleService: RippleService,
@@ -126,4 +126,5 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.menuService.navigateHome();
     return false;
   }
+
 }

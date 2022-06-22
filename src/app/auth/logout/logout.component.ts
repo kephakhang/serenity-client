@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
 
 @Component({
   selector: 'ngx-logout',
@@ -9,9 +10,12 @@ import { FormControl, FormGroup } from '@angular/forms';
 export class LogoutComponent implements OnInit {
   ngFormGroup: FormGroup;
 
-  constructor() { }
+  constructor(public auth: AuthServiceProvider) { 
+    this.auth.logout()
+  }
 
   ngOnInit(): void {
+
   }
 
 }
